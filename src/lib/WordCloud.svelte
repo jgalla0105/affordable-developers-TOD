@@ -43,6 +43,18 @@
     return Number.isFinite(numeric) ? numeric : 0;
   }
 
+  function parseFunds(value) {
+    const numeric = Number(
+        String(value ?? '')
+          .replace(/\$/g, '')
+          .replace(/\.00$/, '')
+          .replace(/,/g, '')
+          .trim()
+      );
+
+    return Number.isFinite(numeric) ? numeric : 0;
+  }
+
   function hashString(input = '') {
     let hash = 1779033703;
 
@@ -106,14 +118,14 @@
     return scaleSqrt().domain([minValue, maxValue]).range([minFont, maxFont]);
   }
 
-  function saturateCategoryColor(category, population, [minPopulation, maxPopulation]) {
+  function saturateCategoryColor(category, fund, [minFunds, maxFunds]) {
     const base = hsl(categoryColor(category) ?? '#64748b');
 
-    if (!Number.isFinite(minPopulation) || !Number.isFinite(maxPopulation) || minPopulation === maxPopulation) {
+    if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds) || minFunds === maxFunds) {
       return hsl(base.h, 0.75, base.l).formatHex();
     }
 
-    const t = (population - minPopulation) / (maxPopulation - minPopulation);
+    const t = (fund - minFunds) / (maxFunds - minFunds);
     const saturation = 0.2 + t * 0.8;
 
     return hsl(base.h, saturation, base.l).formatHex();
@@ -148,21 +160,29 @@
   function getAwardeeWords(category) {
     const filtered = rows.filter((row) => row.category === category);
 
-    // We keep one population per awardee. If your source data ever stores partial
-    // populations across multiple rows, switch max(...) to a sum(...).
+    // We keep one population and amount of funds per awardee
     const awardees = rollups(
       filtered,
-      (group) => max(group, (row) => row.population) ?? 0,
+      (group) => [
+        max(group, (row) => row.population) ?? 0,
+        max(group, (row) => row.funds) ?? 0
+      ],
       (row) => row.awardee
-    ).sort((a, b) => b[1] - a[1] || ascending(a[0], b[0]));
+    )
+      .map(([awardee, [population, funds]]) => [awardee, population, funds])
+      .sort((a, b) => b[1] - a[1] || ascending(a[0], b[0]));
 
-    const populations = awardees.map(([, population]) => population);
+    const populations = awardees.map(([, population, _funds]) => population);
     const minFont = clamp(width * 0.02, 14, 22);
     const maxFont = clamp(width * 0.085, 38, 76);
     const fontScale = createFontScale(populations, minFont, maxFont);
     const populationExtent = extent(populations);
+    
+    const funds = awardees.map(([, , fund]) => fund);
+    const fundsExtent = extent(funds); 
 
-    return awardees.map(([awardee, population]) => ({
+    //saturation is based on how much money (funds) the awardee got
+    return awardees.map(([awardee, population, fund]) => ({
       kind: 'awardee',
       text: awardee,
       category,
@@ -170,23 +190,19 @@
       value: population,
       population,
       size: fontScale(population),
-      fill: saturateCategoryColor(category, population, populationExtent),
-      title: `${awardee}: population ${numberFormat.format(population)}`
+      fill: saturateCategoryColor(category, fund, fundsExtent),
+      // fill: saturateCategoryColor(category, population, populationExtent),
+      title: `${awardee}: Population ${numberFormat.format(population)}, Funds ${numberFormat.format(fund)}`
     }));
     
   }
-  // console.log("selected category is", selectedCategory);
-  // $: displayWords = selectedCategory ? getAwardeeWords(selectedCategory) : getCategoryWords();
-
-  // $: console.log('selected category is', selectedCategory);
+  
 
 $: {
   const _rows = rows;
   const _width = width;
   const _categoryColor = categoryColor;
   const _selectedCategory = selectedCategory;
-
-  // console.log(selectedCategory ? selectedCategory : "selected cat doesn't exist");
 
   displayWords = selectedCategory
     ? getAwardeeWords(selectedCategory)
@@ -203,6 +219,7 @@ $: {
         const awardee = (row.Awardee ?? row.awardee ?? '').trim();
         const category = (row.Category ?? row.category ?? '').trim();
         const population = parsePopulation(row.Population ?? row.population);
+        const funds = parseFunds(row.funds ?? row.funds);
 
         if (!awardee || !category) {
           return null;
@@ -211,7 +228,8 @@ $: {
         return {
           awardee,
           category,
-          population
+          population,
+          funds
         };
         
       });
@@ -245,7 +263,6 @@ $: {
 
     // rotate each word by same amount every render (making sure "mixed use development" isn't off-screen)
     function getWordRotation(text) {
-        console.log("checking", text, text.length);
         if (text.length == 21) {
           return 0;
         }
@@ -295,7 +312,6 @@ $: {
 
     cloudFactory = importedCloud;
     await loadRows();
-    // console.log(rows);
 
     resizeObserver = new ResizeObserver((entries) => {
       const nextWidth = Math.floor(entries[0]?.contentRect?.width ?? 0);
@@ -318,12 +334,8 @@ $: {
 
   $: height = clamp(Math.round(width * 0.68), 420, 700);
 
-  // $: if (cloudFactory && rows.length && width > 0 && height > 0 && !loading && !error) {
-  //   runLayout();
-  // }
   $: {
-    // displayWords;
-    // selectedCategory;
+    
     const _displayWords = displayWords;
     const _selectedCategory = selectedCategory;
     const _cloudFactory = cloudFactory;
@@ -332,12 +344,7 @@ $: {
     const _width = width;
     const _height = height;
 
-    // if (cloudFactory && width > 0 && height > 0 && !loading && !error && displayWords.length > 0) {
-    //   runLayout();
-    // } else if (!loading && !error) {
-    //   stopLayout();
-    //   positionedWords = [];
-    // }
+    
     if (_cloudFactory && !_loading && !_error && _width > 0 && _height > 0 && _displayWords.length > 0) {
       runLayout();
     } else if (!_loading && !_error) {
