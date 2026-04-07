@@ -237,10 +237,14 @@ $: {
     const seededRandom = mulberry32(hashString(seedKey));
     const wordsForLayout = displayWords.map((word) => ({ ...word }));
 
-    // rotate each word by same amount every render
+    // rotate each word by same amount every render (making sure "mixed use development" isn't off-screen)
     function getWordRotation(text) {
+        console.log("checking", text, text.length);
+        if (text.length == 21) {
+          return 0;
+        }
       return hashString(text) % 2 === 0 ? 0 : -90;
-    //   if word.size() > 
+    
     }
 
     currentLayout = cloudFactory()
