@@ -11,8 +11,9 @@
     scaleSqrt,
     schemeTableau10
   } from 'd3';
+  import { base } from '$app/paths';
 
-  export let csvUrl = '/wordcloud-classified-data.csv';
+  export let csvUrl = `wordcloud-classified-data.csv`;
   export let fontFamily = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
   let cloudFactory;
