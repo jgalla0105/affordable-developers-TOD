@@ -68,6 +68,8 @@
       return schemeTableau10.slice(0, count);
     }
 
+    // ** HARDCODE AN ARRAY OF THE COLOR SCHEME COLORS (NEED 7) **
+
     return Array.from({ length: count }, (_, index) =>
       hsl((index / count) * 360, 0.62, 0.5).formatHex()
     );
@@ -165,6 +167,7 @@
       fill: saturateCategoryColor(category, population, populationExtent),
       title: `${awardee}: population ${numberFormat.format(population)}`
     }));
+    
   }
   // console.log("selected category is", selectedCategory);
   // $: displayWords = selectedCategory ? getAwardeeWords(selectedCategory) : getCategoryWords();
@@ -177,7 +180,7 @@ $: {
   const _categoryColor = categoryColor;
   const _selectedCategory = selectedCategory;
 
-  console.log(selectedCategory ? selectedCategory : "selected cat doesn't exist");
+  // console.log(selectedCategory ? selectedCategory : "selected cat doesn't exist");
 
   displayWords = selectedCategory
     ? getAwardeeWords(selectedCategory)
@@ -234,11 +237,17 @@ $: {
     const seededRandom = mulberry32(hashString(seedKey));
     const wordsForLayout = displayWords.map((word) => ({ ...word }));
 
+    // rotate each word by same amount every render
+    function getWordRotation(text) {
+      return hashString(text) % 2 === 0 ? 0 : -90;
+    //   if word.size() > 
+    }
+
     currentLayout = cloudFactory()
       .size([width, height])
       .words(wordsForLayout)
       .padding(selectedCategory ? 3 : 8)
-      .rotate(() => 0)
+      .rotate((word) => getWordRotation(word.text))
       .font(fontFamily)
       .fontSize((word) => word.size)
       .timeInterval(20)
@@ -337,7 +346,7 @@ $: {
 
     {#if selectedCategory}
       <button type="button" class="back-button" on:click={resetView}>
-        ← Back to categories
+         <b>← BACK</b>
       </button>
     {/if}
   </div>
@@ -358,7 +367,7 @@ $: {
         viewBox={`0 0 ${width} ${height}`}
         aria-label={selectedCategory ? `${selectedCategory} awardees word cloud` : 'Category word cloud'}
       >
-        <rect width={width} height={height} rx="18" fill="#f8fafc" />
+        <rect width={width} height={height} rx="18" fill="#ffffff" />
         <g>
           {#each positionedWords as word (word.text)}
             <g
@@ -370,6 +379,7 @@ $: {
               class:word-group--clickable={word.kind === 'category'}
               on:click={() => handleCategorySelect(word)}
               on:keydown={(event) => handleKeydown(event, word)}
+              
             >
               <title>{word.title}</title>
               <text
@@ -392,7 +402,8 @@ $: {
 
 <style>
   :global(body) {
-    background: #f1f5f9;
+    /* background: #f1f5f9; */
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
   .panel {
@@ -422,14 +433,17 @@ $: {
     line-height: 1.5;
   }
 
+
   .cloud-shell {
     width: 100%;
     min-height: 420px;
+    /* background-color: #000000; */
   }
 
   svg {
     display: block;
     filter: drop-shadow(0 12px 30px rgba(15, 23, 42, 0.06));
+    
   }
 
   .word-group text {
@@ -464,10 +478,11 @@ $: {
     padding: 0.7rem 1rem;
     font: inherit;
     cursor: pointer;
+    margin-right: 20px;
   }
 
   .back-button:hover {
-    background: #f8fafc;
+    background: #23232034;
   }
 
   .state-message {
