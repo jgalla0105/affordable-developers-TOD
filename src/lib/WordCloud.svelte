@@ -64,15 +64,21 @@
   }
 
   function buildPalette(count) {
-    if (count <= schemeTableau10.length) {
-      return schemeTableau10.slice(0, count);
-    }
+    // if (count <= schemeTableau10.length) {
+    //   // console.log(schemeTableau10.slice(0, count));
+    //   return schemeTableau10.slice(0, count);
+    // }
+    // return Array.from({ length: count }, (_, index) =>
+    //   hsl((index / count) * 360, 0.62, 0.5).formatHex()
+    // );
 
-    // ** HARDCODE AN ARRAY OF THE COLOR SCHEME COLORS (NEED 7) **
+    // harcoded colours to use MBTA lines, bus, commuter rail, and ferry colours
+    // yellow, purple, blue, red, green, orange, black
+    // let colorScheme = ["#ffc72b", "#82076c", "#008eaa", "#aa002c", "#04aa00", "#b9620e", "#0d0808" ]
 
-    return Array.from({ length: count }, (_, index) =>
-      hsl((index / count) * 360, 0.62, 0.5).formatHex()
-    );
+    //hardcoded proposed color scheme with repeated colours
+    let colorScheme = ["#ffc72b", "#82076c", "#008eaa","#ffc72b", "#82076c", "#008eaa","#82076c"];
+    return colorScheme;
   }
 
   $: categories = Array.from(new Set(rows.map((row) => row.category))).sort(ascending);
