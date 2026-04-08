@@ -400,45 +400,25 @@ $: legendEndColor = selectedCategory
 <section class="panel">
   <div class="panel__layout" class:panel__layout--detail={selectedCategory}>
     <div class="panel__meta">
-      <div class="panel__header">
-        <h2 class="panel__title" class:panel__title--detail={selectedCategory}>
-          {panelTitle}
-        </h2>
-        <p class="panel__summary">{summaryText}</p>
-      </div>
-
       {#if selectedCategory}
         <div class="panel__controls">
           <button type="button" class="back-button" on:click={resetView}>
             <span class="back-button__icon" aria-hidden="true">←</span>
             <span>Back to categories</span>
           </button>
-
-          <div class="legend">
-            <p class="legend__title">Funding intensity</p>
-
-            <div class="legend__label-row">
-              <span>Lowest funding</span>
-              <span>Highest funding</span>
-            </div>
-
-            <div
-              class="legend__bar"
-              style={`background: linear-gradient(to right, ${legendStartColor}, ${legendEndColor});`}
-              aria-label={`Funding color scale for ${selectedCategory}`}
-            ></div>
-
-            <div class="legend__value-row">
-              <span>${numberFormat.format(legendMinFunds)}</span>
-              <span>${numberFormat.format(legendMaxFunds)}</span>
-            </div>
-          </div>
         </div>
       {/if}
+
+      <div class="panel__header">
+        <h2 class="panel__title" class:panel__title--detail={selectedCategory}>
+          {panelTitle}
+        </h2>
+        <p class="panel__summary">{summaryText}</p>
+      </div>
     </div>
 
-    <div class="cloud-shell" bind:this={container}>
-      <div class="cloud-frame">
+    <div class="cloud-shell" class:cloud-shell--detail={selectedCategory}>
+      <div class="cloud-frame" bind:this={container}>
         {#if loading}
           <div class="state-message">Loading CSV…</div>
         {:else if error}
@@ -490,6 +470,28 @@ $: legendEndColor = selectedCategory
           </svg>
         {/if}
       </div>
+
+      {#if selectedCategory}
+        <div class="legend legend--side">
+          <p class="legend__title">Funding intensity</p>
+
+          <div class="legend__side-label legend__side-label--top">
+            <span>Highest funding</span>
+            <span>${numberFormat.format(legendMaxFunds)}</span>
+          </div>
+
+          <div
+            class="legend__bar legend__bar--vertical"
+            style={`background: linear-gradient(to bottom, ${legendStartColor}, ${legendEndColor});`}
+            aria-label={`Funding color scale for ${selectedCategory}`}
+          ></div>
+
+          <div class="legend__side-label legend__side-label--bottom">
+            <span>Lowest funding</span>
+            <span>${numberFormat.format(legendMinFunds)}</span>
+          </div>
+        </div>
+      {/if}
     </div>
   </div>
 </section>
@@ -567,7 +569,14 @@ $: legendEndColor = selectedCategory
     align-items: start;
   }
 
+  .cloud-shell--detail {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+    align-items: center;
+  }
+
   .cloud-frame {
+    min-width: 0;
     min-height: 420px;
     border-radius: 24px;
     border: 2px solid rgba(148, 163, 184, 0.32);
@@ -681,6 +690,17 @@ $: legendEndColor = selectedCategory
     box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
   }
 
+  .legend--side {
+    width: clamp(4.75rem, 10vw, 6rem);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    justify-items: end;
+    align-content: center;
+    text-align: right;
+  }
+
   .legend__title {
     margin: 0;
     font-size: 0.82rem;
@@ -690,19 +710,35 @@ $: legendEndColor = selectedCategory
     color: #475569;
   }
 
-  .legend__label-row,
-  .legend__value-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    font-size: 0.9rem;
-    color: #475569;
+  .legend--side .legend__title {
+    width: 100%;
   }
 
   .legend__bar {
     height: 16px;
     border-radius: 999px;
     border: 1px solid rgba(15, 23, 42, 0.12);
+  }
+
+  .legend__bar--vertical {
+    width: 16px;
+    height: clamp(12rem, 34vw, 18rem);
+    justify-self: end;
+  }
+
+  .legend__side-label {
+    display: grid;
+    gap: 0.18rem;
+    font-size: 0.9rem;
+    color: #475569;
+  }
+
+  .legend__side-label--top {
+    align-self: end;
+  }
+
+  .legend__side-label--bottom {
+    align-self: start;
   }
 
   @media (min-width: 900px) {
