@@ -353,6 +353,23 @@ $: {
       positionedWords = [];
     }
 }
+
+//making legend for awardee wordcloud
+$: awardeeFunds = selectedRows.map((row) => row.funds).filter((v) => Number.isFinite(v));
+
+$: awardeeFundsExtent = extent(awardeeFunds);
+
+$: legendMinFunds = awardeeFundsExtent[0] ?? 0;
+$: legendMaxFunds = awardeeFundsExtent[1] ?? 0;
+
+$: legendStartColor = selectedCategory
+  ? saturateCategoryColor(selectedCategory, legendMinFunds, awardeeFundsExtent)
+  : null;
+
+$: legendEndColor = selectedCategory
+  ? saturateCategoryColor(selectedCategory, legendMaxFunds, awardeeFundsExtent)
+  : null;
+  
 </script>
 
 <section class="panel">
@@ -379,6 +396,25 @@ $: {
     {:else if displayWords.length === 0}
       <div class="state-message">No rows matched the current view.</div>
     {:else}
+    {#if selectedCategory}
+      <div class="legend">
+        <div class="legend__label-row">
+          <span>Lowest funding</span>
+          <span>Highest funding</span>
+        </div>
+
+        <div
+          class="legend__bar"
+          style={`background: linear-gradient(to right, ${legendStartColor}, ${legendEndColor});`}
+          aria-label={`Funding color scale for ${selectedCategory}`}
+        ></div>
+
+        <div class="legend__value-row">
+          <span>${numberFormat.format(legendMinFunds)}</span>
+          <span>${numberFormat.format(legendMaxFunds)}</span>
+        </div>
+      </div>
+    {/if}
       <svg
         width="100%"
         height={height}
@@ -522,5 +558,27 @@ $: {
   code {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.92em;
+  }
+
+  .legend {
+    display: grid;
+    gap: 0.35rem;
+    max-width: auto;
+    margin-top: 0.5rem;
+  }
+
+  .legend__label-row,
+  .legend__value-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #475569;
+  }
+
+  .legend__bar {
+    height: 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
   }
 </style>
