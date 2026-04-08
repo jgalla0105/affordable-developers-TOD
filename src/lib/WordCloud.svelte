@@ -114,8 +114,8 @@
   $: panelTitle = selectedCategory ? selectedCategory : 'SPENDING CATEGORIES';
 
   $: summaryText = selectedCategory
-    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Larger names correspond to awardees in larger-population communities, while deeper color indicates higher funding levels.`
-    : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the awardees and communities behind it.';
+    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Font size corresponds to awardee population, while font color saturation corresponds to amount the community spent on the selected category.`
+    : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the communities spending awarded funds on that category.';
 
   function createFontScale(values, minFont, maxFont) {
     const [minValue, maxValue] = extent(values);
@@ -287,7 +287,7 @@ $: {
     currentLayout = cloudFactory()
       .size([width, height])
       .words(wordsForLayout)
-      .padding(selectedCategory ? 3 : 8)
+      .padding(selectedCategory ? 15 : 15)
       .rotate((word) => getWordRotation(word.text))
       .font(fontFamily)
       .fontSize((word) => word.size)
@@ -404,7 +404,7 @@ $: legendEndColor = selectedCategory
         <div class="panel__controls">
           <button type="button" class="back-button" on:click={resetView}>
             <span class="back-button__icon" aria-hidden="true">←</span>
-            <span>Back to categories</span>
+            <span>Back to all categories</span>
           </button>
         </div>
       {/if}
@@ -476,7 +476,7 @@ $: legendEndColor = selectedCategory
           <p class="legend__title">Funding amount</p>
 
           <div class="legend__side-label legend__side-label--top">
-            <span>Highest funding</span>
+            <span><b>Highest</b></span>
             <span>${numberFormat.format(legendMaxFunds)}</span>
           </div>
 
@@ -487,7 +487,7 @@ $: legendEndColor = selectedCategory
           ></div>
 
           <div class="legend__side-label legend__side-label--bottom">
-            <span>Lowest funding</span>
+            <span><b>Lowest</b></span>
             <span>${numberFormat.format(legendMinFunds)}</span>
           </div>
         </div>

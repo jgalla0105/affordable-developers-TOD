@@ -39,7 +39,7 @@
 </script>
 
 <main class="page">
-    <h1 class="section-heading">WHAT IS TOD?</h1>
+    <h1 class="section-heading">WHAT IS TRANSIT-ORIENTED DEVELOPMENT?</h1>
     <p>
         Transit-oriented development (TOD) is a planning approach that focuses housing, jobs, shops,
         and services around public transit stations so people can live in denser, mixed-use neighborhoods
