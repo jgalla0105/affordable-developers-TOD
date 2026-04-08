@@ -8,8 +8,7 @@
     max,
     rollups,
     scaleOrdinal,
-    scaleSqrt,
-    schemeTableau10
+    scaleSqrt
   } from 'd3';
   import { base } from '$app/paths';
 
@@ -27,6 +26,7 @@
   let rows = [];
   let positionedWords = [];
   let selectedCategory = null;
+  let hoveredWordKey = null;
   let loading = true;
   let error = '';
   let displayWords = [];
@@ -35,8 +35,30 @@
 
   const numberFormat = new Intl.NumberFormat('en-US');
 
+  $: resolvedCsvUrl = resolveAssetUrl(csvUrl);
+
   function clamp(value, min, max) {
     return Math.min(max, Math.max(min, value));
+  }
+
+  function resolveAssetUrl(path = '') {
+    if (!path) {
+      return path;
+    }
+
+    if (/^(?:[a-z]+:)?\/\//i.test(path)) {
+      return path;
+    }
+
+    if (path.startsWith(base)) {
+      return path;
+    }
+
+    if (path.startsWith('/')) {
+      return `${base}${path}`;
+    }
+
+    return `${base}/${path}`;
   }
 
   function parsePopulation(value) {
@@ -77,21 +99,9 @@
   }
 
   function buildPalette(count) {
-    // if (count <= schemeTableau10.length) {
-    //   // console.log(schemeTableau10.slice(0, count));
-    //   return schemeTableau10.slice(0, count);
-    // }
-    // return Array.from({ length: count }, (_, index) =>
-    //   hsl((index / count) * 360, 0.62, 0.5).formatHex()
-    // );
+    const basePalette = ['#c69000', '#7a2f96', '#00778b'];
 
-    // harcoded colours to use MBTA lines, bus, commuter rail, and ferry colours
-    // yellow, purple, blue, red, green, orange, black
-    // let colorScheme = ["#ffc72b", "#82076c", "#008eaa", "#aa002c", "#04aa00", "#b9620e", "#0d0808" ]
-
-    //hardcoded proposed color scheme with repeated colours
-    let colorScheme = ["#ffc72b", "#82076c", "#008eaa","#ffc72b", "#82076c", "#008eaa","#82076c"];
-    return colorScheme;
+    return Array.from({ length: count }, (_, index) => basePalette[index % basePalette.length]);
   }
 
   $: categories = Array.from(new Set(rows.map((row) => row.category))).sort(ascending);
@@ -101,9 +111,11 @@
     ? rows.filter((row) => row.category === selectedCategory)
     : [];
 
+  $: panelTitle = selectedCategory ? selectedCategory : 'TOD CATEGORIES';
+
   $: summaryText = selectedCategory
-    ? `Showing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in “${selectedCategory}”. Font size reflects population; saturation reflects larger vs. smaller populations.`
-    : 'Click a category to drill down to the awardees in that category. Font size reflects how many rows each category appears in.';
+    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Larger names correspond to awardees in larger-population communities, while deeper color indicates higher funding levels.`
+    : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the awardees and communities behind it.';
 
   function createFontScale(values, minFont, maxFont) {
     const [minValue, maxValue] = extent(values);
@@ -123,13 +135,14 @@
     const base = hsl(categoryColor(category) ?? '#64748b');
 
     if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds) || minFunds === maxFunds) {
-      return hsl(base.h, 0.75, base.l).formatHex();
+      return hsl(base.h, clamp(base.s + 0.18, 0.42, 0.88), clamp(base.l - 0.12, 0.36, 0.56)).formatHex();
     }
 
-    const t = (fund - minFunds) / (maxFunds - minFunds);
-    const saturation = 0.2 + t * 0.8;
+    const t = clamp((fund - minFunds) / (maxFunds - minFunds), 0, 1);
+    const saturation = 0.32 + t * 0.58;
+    const lightness = 0.72 - t * 0.30;
 
-    return hsl(base.h, saturation, base.l).formatHex();
+    return hsl(base.h, saturation, lightness).formatHex();
   }
 
   function getCategoryWords() {
@@ -216,7 +229,7 @@ $: {
     error = '';
 
     try {
-      const parsed = await csv(csvUrl, (row) => {
+      const parsed = await csv(resolvedCsvUrl, (row) => {
         const awardee = (row.Awardee ?? row.awardee ?? '').trim();
         const category = (row.Category ?? row.category ?? '').trim();
         const population = parsePopulation(row.Population ?? row.population);
@@ -289,6 +302,7 @@ $: {
 
   function handleCategorySelect(word) {
     if (word.kind === 'category') {
+      hoveredWordKey = null;
       selectedCategory = word.category;
     }
   }
@@ -305,7 +319,18 @@ $: {
   }
 
   function resetView() {
+    hoveredWordKey = null;
     selectedCategory = null;
+  }
+
+  function handleWordEnter(word) {
+    if (!selectedCategory && word.kind === 'category') {
+      hoveredWordKey = word.text;
+    }
+  }
+
+  function clearWordHover() {
+    hoveredWordKey = null;
   }
 
   onMount(async () => {
@@ -373,84 +398,99 @@ $: legendEndColor = selectedCategory
 </script>
 
 <section class="panel">
-  <div class="panel__header">
-    <div>
-      <h2>{selectedCategory ? selectedCategory : 'Categories'}</h2>
-      <p>{summaryText}</p>
+  <div class="panel__layout" class:panel__layout--detail={selectedCategory}>
+    <div class="panel__meta">
+      <div class="panel__header">
+        <h2 class="panel__title" class:panel__title--detail={selectedCategory}>
+          {panelTitle}
+        </h2>
+        <p class="panel__summary">{summaryText}</p>
+      </div>
+
+      {#if selectedCategory}
+        <div class="panel__controls">
+          <button type="button" class="back-button" on:click={resetView}>
+            <span class="back-button__icon" aria-hidden="true">←</span>
+            <span>Back to categories</span>
+          </button>
+
+          <div class="legend">
+            <p class="legend__title">Funding intensity</p>
+
+            <div class="legend__label-row">
+              <span>Lowest funding</span>
+              <span>Highest funding</span>
+            </div>
+
+            <div
+              class="legend__bar"
+              style={`background: linear-gradient(to right, ${legendStartColor}, ${legendEndColor});`}
+              aria-label={`Funding color scale for ${selectedCategory}`}
+            ></div>
+
+            <div class="legend__value-row">
+              <span>${numberFormat.format(legendMinFunds)}</span>
+              <span>${numberFormat.format(legendMaxFunds)}</span>
+            </div>
+          </div>
+        </div>
+      {/if}
     </div>
 
-    {#if selectedCategory}
-      <button type="button" class="back-button" on:click={resetView}>
-         <b>← BACK</b>
-      </button>
-    {/if}
-  </div>
-
-  <div class="cloud-shell" bind:this={container}>
-    {#if loading}
-      <div class="state-message">Loading CSV…</div>
-    {:else if error}
-      <div class="state-message error">
-        Could not load <code>{csvUrl}</code>: {error}
-      </div>
-    {:else if displayWords.length === 0}
-      <div class="state-message">No rows matched the current view.</div>
-    {:else}
-    {#if selectedCategory}
-      <div class="legend">
-        <div class="legend__label-row">
-          <span>Lowest funding</span>
-          <span>Highest funding</span>
-        </div>
-
-        <div
-          class="legend__bar"
-          style={`background: linear-gradient(to right, ${legendStartColor}, ${legendEndColor});`}
-          aria-label={`Funding color scale for ${selectedCategory}`}
-        ></div>
-
-        <div class="legend__value-row">
-          <span>${numberFormat.format(legendMinFunds)}</span>
-          <span>${numberFormat.format(legendMaxFunds)}</span>
-        </div>
-      </div>
-    {/if}
-      <svg
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        aria-label={selectedCategory ? `${selectedCategory} awardees word cloud` : 'Category word cloud'}
-      >
-        <rect width={width} height={height} rx="18" fill="#ffffff" />
-        <g>
-          {#each positionedWords as word (word.text)}
-            <g
-              transform={`translate(${word.x + width / 2}, ${word.y + height / 2}) rotate(${word.rotate})`}
-              tabindex={word.kind === 'category' ? 0 : undefined}
-              role={word.kind === 'category' ? 'button' : undefined}
-              aria-label={word.title}
-              class:word-group={true}
-              class:word-group--clickable={word.kind === 'category'}
-              on:click={() => handleCategorySelect(word)}
-              on:keydown={(event) => handleKeydown(event, word)}
-              
-            >
-              <title>{word.title}</title>
-              <text
-                text-anchor="middle"
-                dominant-baseline="central"
-                font-size={word.size}
-                font-family={fontFamily}
-                font-weight={word.kind === 'category' ? 700 : 600}
-                fill={word.fill}
-              >
-                {word.text}
-              </text>
+    <div class="cloud-shell" bind:this={container}>
+      <div class="cloud-frame">
+        {#if loading}
+          <div class="state-message">Loading CSV…</div>
+        {:else if error}
+          <div class="state-message error">
+            Could not load <code>{resolvedCsvUrl}</code>: {error}
+          </div>
+        {:else if displayWords.length === 0}
+          <div class="state-message">No rows matched the current view.</div>
+        {:else}
+          <svg
+            width="100%"
+            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            aria-label={selectedCategory ? `${selectedCategory} awardees word cloud` : 'Category word cloud'}
+          >
+            <rect class="cloud-canvas" width={width} height={height} rx="24" />
+            <g>
+              {#each positionedWords as word (word.text)}
+                <g
+                  transform={`translate(${word.x + width / 2}, ${word.y + height / 2}) rotate(${word.rotate})`}
+                  tabindex={word.kind === 'category' ? 0 : undefined}
+                  role={word.kind === 'category' ? 'button' : undefined}
+                  aria-label={word.title}
+                  class:word-group={true}
+                  class:word-group--clickable={word.kind === 'category'}
+                  class:word-group--active={hoveredWordKey === word.text}
+                  class:word-group--dimmed={!selectedCategory && hoveredWordKey && hoveredWordKey !== word.text}
+                  on:click={() => handleCategorySelect(word)}
+                  on:keydown={(event) => handleKeydown(event, word)}
+                  on:mouseenter={() => handleWordEnter(word)}
+                  on:mouseleave={clearWordHover}
+                  on:focus={() => handleWordEnter(word)}
+                  on:blur={clearWordHover}
+                >
+                  <title>{word.title}</title>
+                  <text
+                    text-anchor="middle"
+                    dominant-baseline="central"
+                    font-size={word.size}
+                    font-family={fontFamily}
+                    font-weight={word.kind === 'category' ? 700 : 600}
+                    fill={word.fill}
+                  >
+                    {word.text}
+                  </text>
+                </g>
+              {/each}
             </g>
-          {/each}
-        </g>
-      </svg>
-    {/if}
+          </svg>
+        {/if}
+      </div>
+    </div>
   </div>
 </section>
 
@@ -462,51 +502,103 @@ $: legendEndColor = selectedCategory
 
   .panel {
     display: grid;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .panel__layout {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.75rem);
+    align-items: start;
+  }
+
+  .panel__meta {
+    display: grid;
+    gap: 1.1rem;
+    align-content: start;
   }
 
   .panel__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 0.85rem;
+    width: min(100%, var(--content-width, 72ch));
+    margin: 0 auto;
+    text-align: center;
   }
 
-  h2 {
+  .panel__title {
     margin: 0;
-    font-size: clamp(1.4rem, 2vw, 2rem);
-    line-height: 1.1;
-    color: #0f172a;
+    font-family: 'DotFont', sans-serif;
+    font-size: clamp(2.5rem, 7vw, 3.75rem);
+    line-height: 0.92;
+    letter-spacing: 0.06em;
+    text-align: center;
+    color: rgb(59, 59, 59);
+    text-wrap: balance;
   }
 
-  p {
-    margin: 0.45rem 0 0;
-    max-width: 70ch;
-    color: #475569;
-    line-height: 1.5;
+  .panel__title--detail {
+    font-size: clamp(2.1rem, 5vw, 3.3rem);
+    line-height: 0.98;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
+  .panel__summary {
+    margin: 0;
+    width: 100%;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    line-height: 1.6;
+    text-align: left;
+    color: rgb(59, 59, 59);
+  }
+
+  .panel__controls {
+    display: grid;
+    gap: 1rem;
+    width: min(100%, var(--content-width, 72ch));
+    margin: 0 auto;
+  }
 
   .cloud-shell {
     width: 100%;
+    display: grid;
+    align-items: start;
+  }
+
+  .cloud-frame {
     min-height: 420px;
-    /* background-color: #000000; */
+    border-radius: 24px;
+    border: 2px solid rgba(148, 163, 184, 0.32);
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
   }
 
   svg {
     display: block;
-    filter: drop-shadow(0 12px 30px rgba(15, 23, 42, 0.06));
-    
+  }
+
+  .cloud-canvas {
+    fill: rgba(255, 255, 255, 0.96);
+    stroke: rgba(148, 163, 184, 0.18);
+    stroke-width: 2;
+  }
+
+  .word-group {
+    opacity: 1;
+    transition: opacity 160ms ease;
   }
 
   .word-group text {
     user-select: none;
-    transition: opacity 120ms ease, transform 120ms ease;
+    vector-effect: non-scaling-stroke;
+    transition: opacity 160ms ease, filter 160ms ease, stroke 160ms ease, stroke-width 160ms ease;
   }
 
-  .word-group:hover text {
-    opacity: 0.86;
+  .word-group--dimmed {
+    opacity: 0.24;
   }
 
   .word-group--clickable {
@@ -517,34 +609,52 @@ $: legendEndColor = selectedCategory
     outline: none;
   }
 
+  .word-group--active text,
+  .word-group--clickable:hover text,
   .word-group--clickable:focus text {
     paint-order: stroke fill;
-    stroke: rgba(15, 23, 42, 0.18);
+    stroke: rgba(15, 23, 42, 0.24);
     stroke-width: 8px;
     stroke-linejoin: round;
+    filter:
+      drop-shadow(0 0 0.45rem rgba(255, 255, 255, 0.95))
+      drop-shadow(0 0.7rem 1rem rgba(15, 23, 42, 0.16));
   }
 
   .back-button {
-    border: 1px solid #cbd5e1;
-    background: white;
-    color: #0f172a;
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    color: rgb(59, 59, 59);
     border-radius: 999px;
-    padding: 0.7rem 1rem;
+    padding: 0.8rem 1.15rem;
     font: inherit;
+    font-weight: 700;
     cursor: pointer;
-    margin-right: 20px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
   }
 
   .back-button:hover {
-    background: #23232034;
+    transform: translateY(-1px);
+    border-color: rgba(71, 85, 105, 0.35);
+    background: #ffffff;
+    box-shadow: 0 14px 24px rgba(15, 23, 42, 0.12);
+  }
+
+  .back-button__icon {
+    font-size: 1.05em;
+    line-height: 1;
   }
 
   .state-message {
     display: grid;
     place-items: center;
-    min-height: 420px;
-    border-radius: 18px;
-    background: #f8fafc;
+    min-height: inherit;
+    background: transparent;
     color: #334155;
     text-align: center;
     padding: 2rem;
@@ -562,9 +672,22 @@ $: legendEndColor = selectedCategory
 
   .legend {
     display: grid;
-    gap: 0.35rem;
-    max-width: auto;
-    margin-top: 0.5rem;
+    gap: 0.55rem;
+    width: 100%;
+    padding: 1rem 1rem 0.95rem;
+    border-radius: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .legend__title {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #475569;
   }
 
   .legend__label-row,
@@ -577,8 +700,38 @@ $: legendEndColor = selectedCategory
   }
 
   .legend__bar {
-    height: 14px;
+    height: 16px;
     border-radius: 999px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+  }
+
+  @media (min-width: 900px) {
+    .panel__layout {
+      grid-template-columns: minmax(19rem, 28rem) minmax(0, 1fr);
+    }
+
+    .panel__header,
+    .panel__controls {
+      width: 100%;
+      margin: 0;
+    }
+
+    .panel__header {
+      justify-items: start;
+      text-align: left;
+    }
+
+    .panel__title,
+    .panel__summary {
+      text-align: left;
+    }
+
+    .panel__controls {
+      justify-items: start;
+    }
+
+    .back-button {
+      justify-self: start;
+    }
   }
 </style>
