@@ -62,9 +62,9 @@
     <p>
         The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
         development. At the top level, larger words highlight the project categories that appear most often in
-        the dataset; selecting one reveals the awardees behind it, where larger names point to larger-population
-        communities and deeper color indicates higher funding levels. It is meant to make patterns in local TOD
-        investment easier to scan at a glance before digging into the details.
+        the dataset; selecting one reveals the awardees behind it, where larger and darker names indicate higher
+        funding per capita. It is meant to make patterns in local TOD investment easier to scan at a glance
+        before digging into the details.
     </p>
 
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
