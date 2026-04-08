@@ -111,7 +111,7 @@
     ? rows.filter((row) => row.category === selectedCategory)
     : [];
 
-  $: panelTitle = selectedCategory ? selectedCategory : 'TOD CATEGORIES';
+  $: panelTitle = selectedCategory ? selectedCategory : 'SPENDING CATEGORIES';
 
   $: summaryText = selectedCategory
     ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Larger names correspond to awardees in larger-population communities, while deeper color indicates higher funding levels.`
@@ -473,7 +473,7 @@ $: legendEndColor = selectedCategory
 
       {#if selectedCategory}
         <div class="legend legend--side">
-          <p class="legend__title">Funding intensity</p>
+          <p class="legend__title">Funding amount</p>
 
           <div class="legend__side-label legend__side-label--top">
             <span>Highest funding</span>
