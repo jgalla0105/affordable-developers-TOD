@@ -142,7 +142,7 @@
 
   $: summaryText = selectedCategory
     ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Larger, darker names indicate higher funding per capita.`
-    : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the awardees and communities behind it.';
+    : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the awardees spending on it.';
 
   function createFontScale(values, minFont, maxFont) {
     const [minValue, maxValue] = extent(values);
@@ -620,22 +620,22 @@ $: legendBottomColor = selectedCategory
 <svelte:window on:click={handleWindowClick} />
 
 <section class="panel" bind:this={panelRoot}>
-  <div class="panel__layout" class:panel__layout--detail={selectedCategory}>
-    <div class="panel__meta" class:panel__meta--detail={selectedCategory}>
+  <div class="panel_layout" class:panel_layout--detail={selectedCategory}>
+    <div class="panel_meta" class:panel_meta--detail={selectedCategory}>
       {#if selectedCategory}
-        <div class="panel__controls">
+        <div class="panel_controls">
           <button type="button" class="back-button" on:click={resetView}>
-            <span class="back-button__icon" aria-hidden="true">←</span>
+            <span class="back-button_icon" aria-hidden="true">←</span>
             <span>Back to categories</span>
           </button>
         </div>
       {/if}
 
-      <div class="panel__header">
-        <h2 class="panel__title" class:panel__title--detail={selectedCategory}>
+      <div class="panel_header">
+        <h2 class="panel_title" class:panel_title--detail={selectedCategory}>
           {panelTitle}
         </h2>
-        <p class="panel__summary">{summaryText}</p>
+        <p class="panel_summary">{summaryText}</p>
       </div>
 
       {#if selectedCategory}
@@ -644,23 +644,23 @@ $: legendBottomColor = selectedCategory
           style={`--tooltip-accent: ${tooltipAccentColor};`}
           aria-live="polite"
         >
-          <p class="awardee-panel__eyebrow">
+          <p class="awardee-panel_eyebrow">
             {tooltip ? 'Project details' : 'Hover or click for details'}
           </p>
 
           {#if tooltip}
-            <h3 class="awardee-panel__title">{tooltip.awardee}</h3>
+            <h3 class="awardee-panel_title">{tooltip.awardee}</h3>
 
-            <div class="awardee-panel__content">
+            <div class="awardee-panel_content">
               {#each tooltip.entries as entry (entry.key)}
-                <article class="awardee-panel__entry">
-                  <p class="awardee-panel__year">{entry.fiscalYear ?? 'Year unavailable'}</p>
-                  <p class="awardee-panel__description">{entry.project}</p>
+                <article class="awardee-panel_entry">
+                  <p class="awardee-panel_year">{entry.fiscalYear ?? 'Year unavailable'}</p>
+                  <p class="awardee-panel_description">{entry.project}</p>
                 </article>
               {/each}
             </div>
           {:else}
-            <p class="awardee-panel__placeholder">
+            <p class="awardee-panel_placeholder">
               Hover over a community name in the word cloud to preview each project year and description here, or click one to keep it selected.
             </p>
           {/if}
@@ -730,20 +730,20 @@ $: legendBottomColor = selectedCategory
 
       {#if selectedCategory}
         <div class="legend legend--side">
-          <p class="legend__title">Funding intensity</p>
+          <p class="legend_title">Funding intensity</p>
 
-          <div class="legend__side-label legend__side-label--top">
+          <div class="legend_side-label legend_side-label--top">
             <span>Highest per capita</span>
             <span>{fundingPerCapitaFormat.format(legendMaxFundingPerCapita)}</span>
           </div>
 
           <div
-            class="legend__bar legend__bar--vertical"
+            class="legend_bar legend_bar--vertical"
             style={`background: linear-gradient(to bottom, ${legendTopColor}, ${legendBottomColor});`}
             aria-label={`Funding per capita color scale for ${selectedCategory}`}
           ></div>
 
-          <div class="legend__side-label legend__side-label--bottom">
+          <div class="legend_side-label legend_side-label--bottom">
             <span>Lowest per capita</span>
             <span>{fundingPerCapitaFormat.format(legendMinFundingPerCapita)}</span>
           </div>
@@ -764,19 +764,19 @@ $: legendBottomColor = selectedCategory
     gap: clamp(1rem, 2vw, 1.5rem);
   }
 
-  .panel__layout {
+  .panel_layout {
     display: grid;
     gap: clamp(1.5rem, 3vw, 2.75rem);
     align-items: start;
   }
 
-  .panel__meta {
+  .panel_meta {
     display: grid;
     gap: 1.1rem;
     align-content: start;
   }
 
-  .panel__header {
+  .panel_header {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
@@ -786,10 +786,11 @@ $: legendBottomColor = selectedCategory
     text-align: center;
   }
 
-  .panel__title {
+  .panel_title {
     margin: 0;
     font-family: 'DotFont', sans-serif;
-    font-size: clamp(2.5rem, 7vw, 3.75rem);
+    /* font-size: clamp(2.5rem, 7vw, 3.75rem); */
+    font-size: 2.5rem;
     line-height: 0.92;
     letter-spacing: 0.06em;
     text-align: center;
@@ -797,14 +798,14 @@ $: legendBottomColor = selectedCategory
     text-wrap: balance;
   }
 
-  .panel__title--detail {
+  .panel_title--detail {
     font-size: clamp(2.1rem, 5vw, 3.3rem);
     line-height: 0.98;
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
 
-  .panel__summary {
+  .panel_summary {
     margin: 0;
     width: 100%;
     font-size: clamp(1.05rem, 2vw, 1.35rem);
@@ -813,7 +814,7 @@ $: legendBottomColor = selectedCategory
     color: rgb(59, 59, 59);
   }
 
-  .panel__controls {
+  .panel_controls {
     display: grid;
     gap: 1rem;
     width: min(100%, var(--content-width, 72ch));
@@ -900,7 +901,7 @@ $: legendBottomColor = selectedCategory
     grid-template-rows: auto auto minmax(0, 1fr);
   }
 
-  .awardee-panel__eyebrow {
+  .awardee-panel_eyebrow {
     margin: 0 0 0.6rem;
     font-size: 0.82rem;
     font-weight: 700;
@@ -909,14 +910,14 @@ $: legendBottomColor = selectedCategory
     color: #64748b;
   }
 
-  .awardee-panel__title {
+  .awardee-panel_title {
     margin: 0 0 0.8rem;
     font-size: clamp(1.2rem, 2vw, 1.55rem);
     line-height: 1.1;
     color: #0f172a;
   }
 
-  .awardee-panel__content {
+  .awardee-panel_content {
     display: grid;
     gap: 0.7rem;
     min-height: 0;
@@ -924,25 +925,25 @@ $: legendBottomColor = selectedCategory
     padding-right: 0.2rem;
   }
 
-  .awardee-panel__entry {
+  .awardee-panel_entry {
     display: grid;
     gap: 0.28rem;
     padding-bottom: 0.7rem;
     border-bottom: 1px solid rgba(148, 163, 184, 0.26);
   }
 
-  .awardee-panel__entry:last-child {
+  .awardee-panel_entry:last-child {
     padding-bottom: 0;
     border-bottom: 0;
   }
 
-  .awardee-panel__year,
-  .awardee-panel__description,
-  .awardee-panel__placeholder {
+  .awardee-panel_year,
+  .awardee-panel_description,
+  .awardee-panel_placeholder {
     margin: 0;
   }
 
-  .awardee-panel__year {
+  .awardee-panel_year {
     font-size: 0.84rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -950,14 +951,14 @@ $: legendBottomColor = selectedCategory
     color: var(--tooltip-accent);
   }
 
-  .awardee-panel__description,
-  .awardee-panel__placeholder {
+  .awardee-panel_description,
+  .awardee-panel_placeholder {
     font-size: 0.95rem;
     line-height: 1.45;
     color: #334155;
   }
 
-  .awardee-panel__placeholder {
+  .awardee-panel_placeholder {
     max-width: 28ch;
   }
 
@@ -985,7 +986,7 @@ $: legendBottomColor = selectedCategory
     box-shadow: 0 14px 24px rgba(15, 23, 42, 0.12);
   }
 
-  .back-button__icon {
+  .back-button_icon {
     font-size: 1.05em;
     line-height: 1;
   }
@@ -1032,7 +1033,7 @@ $: legendBottomColor = selectedCategory
     text-align: right;
   }
 
-  .legend__title {
+  .legend_title {
     margin: 0;
     font-size: 0.82rem;
     font-weight: 700;
@@ -1041,67 +1042,67 @@ $: legendBottomColor = selectedCategory
     color: #475569;
   }
 
-  .legend--side .legend__title {
+  .legend--side .legend_title {
     width: 100%;
   }
 
-  .legend__bar {
+  .legend_bar {
     height: 16px;
     border-radius: 999px;
     border: 1px solid rgba(15, 23, 42, 0.12);
   }
 
-  .legend__bar--vertical {
+  .legend_bar--vertical {
     width: 16px;
     height: clamp(12rem, 34vw, 18rem);
     justify-self: end;
   }
 
-  .legend__side-label {
+  .legend_side-label {
     display: grid;
     gap: 0.18rem;
     font-size: 0.9rem;
     color: #475569;
   }
 
-  .legend__side-label--top {
+  .legend_side-label--top {
     align-self: end;
   }
 
-  .legend__side-label--bottom {
+  .legend_side-label--bottom {
     align-self: start;
   }
 
   @media (min-width: 900px) {
-    .panel__layout {
+    .panel_layout {
       grid-template-columns: minmax(19rem, 28rem) minmax(0, 1fr);
     }
 
-    .panel__layout--detail {
+    .panel_layout--detail {
       align-items: stretch;
     }
 
-    .panel__header,
-    .panel__controls {
+    .panel_header,
+    .panel_controls {
       width: 100%;
       margin: 0;
     }
 
-    .panel__header {
+    .panel_header {
       justify-items: start;
       text-align: left;
     }
 
-    .panel__title,
-    .panel__summary {
+    .panel_title,
+    .panel_summary {
       text-align: left;
     }
 
-    .panel__controls {
+    .panel_controls {
       justify-items: start;
     }
 
-    .panel__meta--detail {
+    .panel_meta--detail {
       width: 100%;
       min-height: 100%;
       grid-template-rows: auto auto minmax(0, 1fr);

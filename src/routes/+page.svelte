@@ -58,15 +58,20 @@
         housing near transit while also raising debates about density, affordability, and neighborhood change.
     </p>
 
-    <h2 class="section-heading section-heading--subsection">WHY SHOULD I CARE?</h2>
+    <h2 class="section-heading section-heading--subsection">WHAT DOES THAT ACTUALLY LOOK LIKE?</h2>
     <p>
         The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
-        development. At the top level, larger words highlight the project categories that appear most often in
-        the dataset; selecting one reveals the awardees behind it, where larger and darker names indicate higher
-        funding per capita. It is meant to make patterns in local TOD investment easier to scan at a glance
+        development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; selecting one reveals the awardees (communities) behind it, where larger and darker names indicate higher
+        funding per capita. It is intended to make patterns in local TOD investment easier to scan at a glance
         before digging into the details.
     </p>
 
+    <h2 class="section-heading section-heading--subsection">DOES THIS ALREADY EXIST IN MA?</h2>
+    <p class="placeholder"><b>Placeholder for our map visualisation that shows existing areas in Greater Boston area already benefitting from our defined benefits of TOD</b></p>
+    
+    <h2 class="section-heading section-heading--subsection">WHAT ARE THE PLANS FOR THE FUTURE?</h2>
+    
+    <!-- <p>    </p> -->
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
 </main>
 
@@ -101,7 +106,9 @@
     }
 
     .section-heading--subsection {
-        font-size: clamp(2.5rem, 7vw, 3.75rem);
+        /* font-size: clamp(2.5rem, 7vw, 3.75rem); */
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
     }
 
     p {
@@ -126,6 +133,9 @@
         margin: 0 auto;
         border-radius: 16px;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    }
+    .placeholder {
+        color:brown;
     }
 
 </style>
