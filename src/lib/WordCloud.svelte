@@ -138,6 +138,7 @@
     : [];
 
   $: panelTitle = selectedCategory ? selectedCategory : 'TOD CATEGORIES';
+  $: tooltipAccentColor = selectedCategory ? categoryColor(selectedCategory) ?? '#0ea5c6' : '#0ea5c6';
 
   $: summaryText = selectedCategory
     ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Larger, darker names indicate higher funding per capita.`
