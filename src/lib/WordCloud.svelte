@@ -125,7 +125,7 @@
   }
 
   function buildPalette(count) {
-    const basePalette = ['#c69000', '#7a2f96', '#00778b'];
+    const basePalette = ['#00843D', '#7C878E', '#ED8B00', '#FFC72C', '#DA291C', '#80276C', '#003DA5'];
 
     return Array.from({ length: count }, (_, index) => basePalette[index % basePalette.length]);
   }
