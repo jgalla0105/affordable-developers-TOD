@@ -449,7 +449,7 @@ $: {
     currentLayout = cloudFactory()
       .size([width, height])
       .words(wordsForLayout)
-      .padding(selectedCategory ? 3 : 8)
+      .padding(selectedCategory ? 15 : 15)
       .rotate((word) => getWordRotation(word.text))
       .font(fontFamily)
       .fontSize((word) => word.size)
