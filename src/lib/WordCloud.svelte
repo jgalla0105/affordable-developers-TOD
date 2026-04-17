@@ -788,9 +788,10 @@ $: legendBottomColor = selectedCategory
 
   .panel_title {
     margin: 0;
-    font-family: 'DotFont', sans-serif;
+    /* font-family: 'DotFont', sans-serif; */
+   
     /* font-size: clamp(2.5rem, 7vw, 3.75rem); */
-    font-size: 2.5rem;
+    font-size: 2rem;
     line-height: 0.92;
     letter-spacing: 0.06em;
     text-align: center;
@@ -799,7 +800,8 @@ $: legendBottomColor = selectedCategory
   }
 
   .panel_title--detail {
-    font-size: clamp(2.1rem, 5vw, 3.3rem);
+    /* font-size: clamp(2.1rem, 5vw, 3.3rem); */
+    font-size:2rem;
     line-height: 0.98;
     letter-spacing: 0.05em;
     text-transform: uppercase;
