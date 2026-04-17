@@ -3,6 +3,7 @@
     import { base } from '$app/paths';
     import WordCloud from '$lib/WordCloud.svelte';
     import IntroNarrative from '$lib/IntroNarrative.svelte';
+    // import intro from '$lib/intro.json';
 
     const todFigureCandidates = ['tod-intro.png', 'tod-intro.jpg', 'tod-intro.jpeg', 'tod-intro.webp', 'tod-intro.svg'];
     let todFigureSrc = '';
@@ -42,42 +43,39 @@
 <main class="page">
     <h1 class="section-heading">WHAT IS TRANSIT-ORIENTED DEVELOPMENT?</h1>
     <p>
-        Transit-oriented development (TOD) is a planning approach that focuses housing, jobs, shops,
-        and services around public transit stations so people can live in denser, mixed-use neighborhoods
-        with less reliance on cars. By pairing zoning changes with walkable streets, bike access, and
-        affordable housing, TOD aims to create more sustainable, connected, and equitable communities.
-    </p>
+       Transit-oriented development (TOD) is a planning approach that focuses housing, jobs, shops,
+       and services around public transit stations so people can live in denser, mixed-use neighborhoods
+       with less reliance on cars. By pairing zoning changes with walkable streets, bike access, and
+       affordable housing, TOD aims to create more sustainable, connected, and equitable communities.
+   </p>
 
-    {#if todFigureSrc}
-        <figure class="tod-figure">
-            <img src={todFigureSrc} alt="Transit-oriented development figure" />
-        </figure>
-    {/if}
-
-    <p>
-        In Greater Boston, this idea is closely tied to the MBTA Communities Act, which encourages more
-        housing near transit while also raising debates about density, affordability, and neighborhood change.
-    </p>
+   <p>
+        In the Greater Boston area, MassDOT and the MBTA have outlined some guidelines for TOD. They are: 
+   </p>
 
 
     <IntroNarrative />
-    
 
-    <h2 class="section-heading section-heading--subsection">WHAT DOES THAT ACTUALLY LOOK LIKE?</h2>
+
+    <h2 class="section-heading section-heading--subsection">HOW IS STATE FUNDING CURRENTLY GOING TOWARDS TOD?</h2>
+
     <p>
         The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
         development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; selecting one reveals the awardees (communities) behind it, where larger and darker names indicate higher
         funding per capita. It is intended to make patterns in local TOD investment easier to scan at a glance
         before digging into the details.
     </p>
-
-    <h2 class="section-heading section-heading--subsection">DOES THIS ALREADY EXIST IN MA?</h2>
-    <p class="placeholder"><b>Placeholder for our map visualisation that shows existing areas in Greater Boston area already benefitting from our defined benefits of TOD</b></p>
     
-    <h2 class="section-heading section-heading--subsection">WHAT ARE THE PLANS FOR THE FUTURE?</h2>
-    
-    <!-- <p>    </p> -->
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
+
+    <h2 class="section-heading section-heading--subsection">WHAT PLACES MIGHT BENEFIT MOST FROM TOD?</h2>
+
+    <p class='placeholder'>** explanation of criteria for choosing locations **</p>
+
+    <p class='placeholder'> ** map visualisation **</p>
+
+    <h2 class="section-heading section-heading--subsection">CONCLUSION</h2>
+    <p class='placeholder'>BLAH BLAH BLAH BLAHHHHH BLAH BLAH BLAH BLAH BLAHHHHH BLAHBLAH BLAH BLAH BLAHHHHH BLAHBLAH BLAH BLAH BLAHHHHH BLAHBLAH BLAH BLAH BLAHHHHH BLAH</p>
 
 </main>
 
@@ -91,6 +89,10 @@
         font-display: swap;
     }
 
+    .placeholder {
+        color: red;
+        font-weight: bold;
+    }
     .page {
         --content-width: 72ch;
         --section-gap: clamp(1.25rem, 3vw, 2rem);
