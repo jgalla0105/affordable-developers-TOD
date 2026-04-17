@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import WordCloud from '$lib/WordCloud.svelte';
+    import IntroNarrative from '$lib/IntroNarrative.svelte';
 
     const todFigureCandidates = ['tod-intro.png', 'tod-intro.jpg', 'tod-intro.jpeg', 'tod-intro.webp', 'tod-intro.svg'];
     let todFigureSrc = '';
@@ -58,6 +59,10 @@
         housing near transit while also raising debates about density, affordability, and neighborhood change.
     </p>
 
+
+    <IntroNarrative />
+    
+
     <h2 class="section-heading section-heading--subsection">WHAT DOES THAT ACTUALLY LOOK LIKE?</h2>
     <p>
         The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
@@ -73,6 +78,7 @@
     
     <!-- <p>    </p> -->
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
+
 </main>
 
 
