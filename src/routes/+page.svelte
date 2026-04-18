@@ -50,14 +50,14 @@
    </p>
 
    <p>
-        In the Greater Boston area, MassDOT and the MBTA have outlined some guidelines for TOD. They are: 
+        In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are as follows:  
    </p>
 
-
+   <h2 class="section-heading section-heading--subsection">MBTA TOD PRINCIPLES</h2>
     <IntroNarrative />
 
 
-    <h2 class="section-heading section-heading--subsection">HOW IS STATE FUNDING CURRENTLY GOING TOWARDS TOD?</h2>
+    <h2 class="section-heading section-heading--subsection">HOW IS STATE FUNDING CURRENTLY GOING TOWARDS THESE PRINCIPLES?</h2>
 
     <p>
         The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
@@ -111,6 +111,7 @@
         letter-spacing: 0.06em;
         text-align: center;
         color: rgb(59, 59, 59);
+        text-shadow: 0 0 10px #e6e600;
     }
 
     .section-heading--subsection {
