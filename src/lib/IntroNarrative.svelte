@@ -19,8 +19,8 @@ $: activeSectionIdx = Math.min(intro.length-1, Math.floor(scrollyProgress / prog
         <!-- Story here -->
         {#each intro as i}
             <section class='step'>
-                <div class='step-content'>
-                    <h3>{i.title}</h3>
+                <div class='step-content' style="border-left-color: {i.color};" >
+                    <h3 style="color: {i.color};">{i.title}</h3>
                     <p>{i.story}</p>
                 </div>
             </section>
@@ -51,7 +51,7 @@ $: activeSectionIdx = Math.min(intro.length-1, Math.floor(scrollyProgress / prog
 
     .step-content {
         border-left-style: solid;
-        border-left-color: rgb(59, 59, 59);
+        /* border-left-color: rgb(59, 59, 59); */
         border-left-width: 8px;
         border-left-style:dotted;
         padding: 1.5rem 2rem;
