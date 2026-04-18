@@ -1,25 +1,25 @@
 [
     {
         "title": "First Principle",
-        "image": "/figures/principle1.jpg",
+        "image": "figures/principle1.jpg",
         "story": "lorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmm lorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmm",
         "alt" : "Drawn image of a TOD neighbourhood with something highlighted"
     }, 
     {
         "title": "Second Principle",
-        "image": "/figures/principle2.jpg",
+        "image": "figures/principle2.jpg",
         "story": "lorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem lolorem lorem loremmmmm but second timeremmmmm but second timelorem lorem loremmmmm but second timevlorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second timelorem lorem loremmmmm but second time",
         "alt" : "Drawn image of a TOD neighbourhood with something highlighted"
     }, 
     {
         "title": "Third Principle",
-        "image": "/figures/principle3.jpg",
+        "image": "figures/principle3.jpg",
         "story": "third timeeeee lorem lorem loremmmmm third timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmmthird timeeeee lorem lorem loremmmmm",
         "alt" : "Drawn image of a TOD neighbourhood with something highlighted"
     }, 
     {
         "title": "Fourth Principle",
-        "image": "/figures/principle4.jpg",
+        "image": "figures/principle4.jpg",
         "story": "lorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmmlorem lorem loremmmmm",
         "alt" : "Drawn image of a TOD neighbourhood with something highlighted"
     }
