@@ -1,43 +1,6 @@
 <script>
-    import { onMount } from 'svelte';
-    import { base } from '$app/paths';
     import WordCloud from '$lib/WordCloud.svelte';
     import IntroNarrative from '$lib/IntroNarrative.svelte';
-    // import intro from '$lib/intro.json';
-
-    const todFigureCandidates = ['tod-intro.png', 'tod-intro.jpg', 'tod-intro.jpeg', 'tod-intro.webp', 'tod-intro.svg'];
-    let todFigureSrc = '';
-
-    onMount(() => {
-        let isCancelled = false;
-
-        async function findTodFigure() {
-            for (const fileName of todFigureCandidates) {
-                const candidateSrc = `${base}/figures/${fileName}`;
-                const exists = await new Promise((resolve) => {
-                    const image = new Image();
-
-                    image.onload = () => resolve(true);
-                    image.onerror = () => resolve(false);
-                    image.src = candidateSrc;
-                });
-
-                if (exists) {
-                    if (!isCancelled) {
-                        todFigureSrc = candidateSrc;
-                    }
-
-                    return;
-                }
-            }
-        }
-
-        findTodFigure();
-
-        return () => {
-            isCancelled = true;
-        };
-    });
 </script>
 
 <main class="page">
@@ -61,7 +24,7 @@
 
     <p>
         The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
-        development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; selecting one reveals the awardees (communities) behind it, where larger and darker names indicate higher
+        development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; selecting one reveals the awardees (communities) behind it as a bar chart, where longer and darker bars indicate higher
         funding per capita. It is intended to make patterns in local TOD investment easier to scan at a glance
         before digging into the details.
     </p>
@@ -129,20 +92,6 @@
         color: rgb(59, 59, 59);
     }
 
-    .tod-figure {
-        width: min(100%, var(--content-width));
-        margin: 0 auto;
-    }
-
-    .tod-figure img {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        margin: 0 auto;
-        border-radius: 16px;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
-    }
     .placeholder {
         color:brown;
     }
