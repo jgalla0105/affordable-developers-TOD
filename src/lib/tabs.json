@@ -1,0 +1,37 @@
+[
+    {
+        "heading": "Percentage of Multifamily Housing",
+        "url": "placeholder url",
+        "justification": "Multifamily housing refers to residential properties that contain multiple separate housing units, allowing more than one family to live independently within the same building or complex. Multifamily housing can offer more affordable living options compared to single-family homes."
+    },
+
+    {
+        "heading": "Percentage of Mixed-use Development",
+        "url": "placeholder2",
+        "justification": "Mixed-use development entertains multiple land purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land. To provide walking and micro-mobility proximity to multiple types of facilities, TOD prioritizes this type of development."
+    },
+
+    {
+        "heading": "Rent Burden",
+        "url": "placeholder3",
+        "justification": "Determined by the U.S. Congress, rent burden includes individuals who dedicate 30% of their monthly income to household fees (i.e rent, electrical, water). Affordable housing for low-income and/or rent burdened persons near transit stations encourages accessibility for longer travel distances, another goal of TOD."
+    },
+    
+    {
+            "heading": "Resistance to Climate Change",
+            "url": "placeholder4",
+            "justification": "Impacted area of heat/flood by climate change by county subdivision. To encourage sustainable infrastructure in the fight against climate change, TOD builds resistance in vulnerable communities–those affected by air quality, irregular temperatures and natural disasters. Guaranteeing safety and accessibility is of utmost importance when moving within a walkshed."
+    },
+
+    {
+            "heading": "Disability",
+            "url": "placeholder5",
+            "justification": "Transit oriented development prioritizes accessibility and mobility. In Massachusetts, all walking environments must provide full Americans with Disabilities Act (ADA)-compliant accessibility for all pedestrians with disabilities."
+    },
+
+    {
+        "heading": "Parking Lot Area Nearby",
+        "url": "placeholder6",
+        "justification": "Park and Ride is a transportation system where drivers park their vehicles near public transport hubs. This aims to reduce the number of private vehicles in urban areas by allowing people to park and ride."
+    }
+]
