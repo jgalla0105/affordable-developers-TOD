@@ -17,7 +17,7 @@
 
 <div class="content">
     <h4>{tabs[activeTab].heading}</h4>
-    <p><b> Map goes here</b></p>
+    <p><b> Chloropleth Map component goes here</b></p>
   <p class="justification">{tabs[activeTab].justification}</p>
   
 </div>
@@ -56,12 +56,12 @@
     box-shadow: 0 14px 24px rgba(15, 23, 42, 0.12);
   }
   .justification {
-    border-style: solid;
-    border-width: 3px;
-    border-color:rgba(148, 163, 184, 0.55);
-    background-color:#eee98577; 
-    padding: 15px;
-    font-size: clamp(1.05rem, 2vw, 1.35rem);
+     border: 2px solid rgba(148, 163, 184, 0.32);
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        border-radius: 24px;
+      padding: 15px;
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
 
   }
 

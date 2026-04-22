@@ -71,7 +71,7 @@
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
 
     <h2 class="section-heading section-heading--subsection">WHAT PLACES MIGHT BENEFIT MOST FROM TOD?</h2>
-
+    <p class="placeholder"> <b> ** Click on a criterion to see how it was used in determining what communities might benefit from transit-oriented development. **</b></p>
     <TabSection/>
 
    
