@@ -64,7 +64,7 @@ $: activeSectionIdx = Math.min(intro.length-1, Math.floor(scrollyProgress / prog
     }
 
     img {
-        max-width: 150%;
+        max-width: 100%;
     }
 
 
