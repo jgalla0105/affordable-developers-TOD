@@ -1,6 +1,42 @@
 <script>
     import WordCloud from '$lib/WordCloud.svelte';
     import IntroNarrative from '$lib/IntroNarrative.svelte';
+    import TabSection from '../lib/TabSection.svelte';
+    // import intro from '$lib/intro.json';
+
+    const todFigureCandidates = ['tod-intro.png', 'tod-intro.jpg', 'tod-intro.jpeg', 'tod-intro.webp', 'tod-intro.svg'];
+    let todFigureSrc = '';
+
+    onMount(() => {
+        let isCancelled = false;
+
+        async function findTodFigure() {
+            for (const fileName of todFigureCandidates) {
+                const candidateSrc = `${base}/figures/${fileName}`;
+                const exists = await new Promise((resolve) => {
+                    const image = new Image();
+
+                    image.onload = () => resolve(true);
+                    image.onerror = () => resolve(false);
+                    image.src = candidateSrc;
+                });
+
+                if (exists) {
+                    if (!isCancelled) {
+                        todFigureSrc = candidateSrc;
+                    }
+
+                    return;
+                }
+            }
+        }
+
+        findTodFigure();
+
+        return () => {
+            isCancelled = true;
+        };
+    });
 </script>
 
 <main class="page">
@@ -22,6 +58,7 @@
 
     <h2 class="section-heading section-heading--subsection">HOW IS STATE FUNDING CURRENTLY GOING TOWARDS THESE PRINCIPLES?</h2>
 
+    <p class="placeholder">** introduce the MBTA Communities Act briefly **</p>
     <p>
         The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
         development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; selecting one reveals the awardees (communities) behind it as a bar chart, where longer and darker bars indicate higher
@@ -32,13 +69,10 @@
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
 
     <h2 class="section-heading section-heading--subsection">WHAT PLACES MIGHT BENEFIT MOST FROM TOD?</h2>
+    <p class="placeholder"> <b> ** Click on a criterion to see how it was used in determining what communities might benefit from transit-oriented development. **</b></p>
+    <TabSection/>
 
-    <p class='placeholder'>** explanation of criteria for choosing locations **</p>
-
-    <p class='placeholder'> ** map visualisation **</p>
-
-    <h2 class="section-heading section-heading--subsection">CONCLUSION</h2>
-    <p class='placeholder'>BLAH BLAH BLAH BLAHHHHH BLAH BLAH BLAH BLAH BLAHHHHH BLAHBLAH BLAH BLAH BLAHHHHH BLAHBLAH BLAH BLAH BLAHHHHH BLAHBLAH BLAH BLAH BLAHHHHH BLAH</p>
+   
 
 </main>
 
@@ -50,6 +84,9 @@
         font-weight: normal;
         font-style: normal;
         font-display: swap;
+    }
+    :global(body) {
+     background-color: #fcfbec; /* Replace with your desired color */
     }
 
     .placeholder {

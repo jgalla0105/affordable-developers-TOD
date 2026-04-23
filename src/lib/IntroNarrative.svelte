@@ -53,9 +53,19 @@
     .section-detail {
         padding: 2rem;
         width: 100%;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;      /* vertical centering */
+        justify-content: center;  /* horizontal centering */
     }
 
     img {
         max-width: 100%;
+        max-height: calc(100vh - 4rem);
+        object-fit: contain;
+        border: 2px solid rgba(148, 163, 184, 0.32);
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        border-radius: 24px;
     }
 </style>

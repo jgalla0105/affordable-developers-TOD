@@ -3,26 +3,28 @@
         "title": "A. Density and Mix of Uses",
         "image": "figures/principle1.jpg",
         "story": "Transit-oriented development centers relatively dense, mixed-use development within walking distance of transit stations, tailored to the scale of its surrounding context. By concentrating homes, jobs, shops, offices, and destinations like schools or entertainment near transit, TOD supports all-day ridership, makes transit service more efficient, and reduces reliance on cars. This mix can occur within a single building, across nearby blocks, or across adjacent stations, while also making it easier for people to walk for daily needs and lowering vehicle miles traveled and greenhouse gas emissions.",
-        "alt" : "Drawn image of a TOD neighbourhood with something highlighted",
+        "alt" : "Drawn image of a TOD neighbourhood with mixed use buildings highlighted",
         "color": "#00843D"
     }, 
     {
         "title": "B. Equitable Development",
         "image": "figures/principle2.jpg",
         "story": "Equitable transit-oriented development combines transit access with affordable, mixed-income housing, stronger job access, and investments that support existing communities. It works toward these goals by encouraging affordable and workforce housing near transit to reduce displacement and give lower- and middle-income households access to opportunity-rich areas, while also lowering combined housing and transportation costs by reducing the need for car ownership and long commutes. Equitable TOD also improves access to jobs through transit-centered employment hubs and last-mile connections like shuttles, and it strengthens neighborhoods by supporting community services, local businesses, and partnerships with community organizations. At the same time, it promotes sustainable, resilient development through greener building standards and protections against climate risks such as flooding and sea level rise.",
+        "alt": "Drawn image of a TOD neighbourhood with affordable housing and public transportation highlighted",
         "color" : "#DA291C"
     }, 
     {
         "title": "C. A Great Public Realm",
         "image": "figures/principle3.jpg",
         "story": "A great public realm supports TOD by making it safe, easy, and appealing for people to reach and move around stations on foot, by bike, or via connecting transit. It works toward these goals through continuous pedestrian networks, complete streets, accessible sidewalks and crossings, plazas, lighting, wayfinding, and active ground-floor uses like shops or restaurants that make station areas feel lively and connected. These features improve access for all users, especially pedestrians, cyclists, seniors, and people with disabilities, while encouraging walking, gathering, and seamless connections between transit, buildings, and public spaces. Because this kind of infrastructure can be expensive, it is often implemented through developer contributions, public grants, and financing tools that help fund streets, sidewalks, trails, bridges, and other improvements needed to make station areas functional and welcoming.",
-        "alt" : "Drawn image of a TOD neighbourhood with something highlighted",
+        "alt" : "Drawn image of a TOD neighbourhood with bike lane, crosswalk, and wheelchair accessible ramps highlighted",
         "color" : "#003DA5"
     }, 
     {
         "title": "D. A TOD Approach to Parking",
         "image": "figures/principle4.jpg",
         "story": "A TOD approach to parking works by providing only the amount of parking actually needed, encouraging shared parking, and designing it so it does not dominate the area around a station or block better uses of land. Because transit, walking, and mixed-use development reduce the need to drive, TOD can support fewer parking spaces while still meeting demand, which lowers development costs and frees valuable land for housing, jobs, shops, and public space. It also makes parking more efficient by allowing uses with different peak hours to share the same supply, and by placing park-and-ride facilities more strategically so prime land near stations can be developed. Rather than eliminating parking, TOD typically reduces and manages it through lower parking ratios, shared facilities, and demand-management programs that encourage transit and other alternatives to driving.", 
+        "alt": "Drawn image of a TOD neighbourhood with parking lot highlighted",
         "color": "#ED8B00"
     }
 ]
