@@ -35,11 +35,16 @@
   let loading = true;
   let error = '';
   let displayWords = [];
+  let scaleMode = 'relative';
 
   
 
   const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
   const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+  const SCALE_MODE_LABELS = {
+    relative: 'Relative scale',
+    global: 'Global scale'
+  };
 
   const numberFormat = new Intl.NumberFormat('en-US');
   const fundsFormat = new Intl.NumberFormat('en-US', {
@@ -133,9 +138,12 @@
 
   $: panelTitle = selectedCategory ? selectedCategory : 'TOD CATEGORIES';
   $: tooltipAccentColor = selectedCategory ? categoryColor(selectedCategory) ?? '#0ea5c6' : '#0ea5c6';
+  $: scaleModeDescription = scaleMode === 'global'
+    ? 'Bars and colors use the same funding-per-capita scale across every category.'
+    : 'Bars and colors are scaled within this category for easier local comparison.';
 
   $: summaryText = selectedCategory
-    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Longer, darker bars indicate higher funding per capita.`
+    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". ${scaleModeDescription} Hover or click a community to review its funding metrics and projects here.`
     : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the awardees spending on it.';
 
   function createFontScale(values, minFont, maxFont) {
@@ -200,10 +208,11 @@
     }));
   }
 
-  function getAwardeeBars(category, awardees = getAwardeeMetrics(category)) {
-    const fundingPerCapitaValues = awardees.map(({ fundingPerCapita }) => fundingPerCapita);
-    const fundingPerCapitaExtent = extent(fundingPerCapitaValues);
-
+  function getAwardeeBars(
+    category,
+    awardees = getAwardeeMetrics(category),
+    fundingPerCapitaExtent = extent(awardees.map(({ fundingPerCapita }) => fundingPerCapita))
+  ) {
     return awardees.map(({ awardee, population, funds, fundingPerCapita }) => ({
       kind: 'awardee',
       text: awardee,
@@ -277,25 +286,11 @@
     hoveredAwardee = null;
   }
 
-  function hasAwardeeProjectEntries(word) {
-    return getAwardeeProjectEntries(word.category, word.awardee).length > 0;
-  }
-
   function previewAwardee(word) {
-    if (!hasAwardeeProjectEntries(word)) {
-      clearAwardeePreview();
-      return;
-    }
-
     hoveredAwardee = createAwardeeSelection(word);
   }
 
   function pinAwardee(word) {
-    if (!hasAwardeeProjectEntries(word)) {
-      clearAwardeeSelection();
-      return;
-    }
-
     pinnedAwardee = createAwardeeSelection(word);
     hoveredAwardee = null;
   }
@@ -304,22 +299,43 @@
 
   $: tooltip = activeAwardee
     ? (() => {
+        const metrics = awardeeMetrics.find(({ awardee }) => awardee === activeAwardee.awardee);
         const entries = getAwardeeProjectEntries(activeAwardee.category, activeAwardee.awardee);
 
-        return entries.length > 0
-          ? {
-              awardee: activeAwardee.awardee,
-              category: activeAwardee.category,
-              entries
-            }
-          : null;
+        return {
+          awardee: activeAwardee.awardee,
+          category: activeAwardee.category,
+          population: metrics?.population ?? 0,
+          funds: metrics?.funds ?? 0,
+          fundingPerCapita: metrics?.fundingPerCapita ?? 0,
+          entries
+        };
       })()
     : null;
 
   $: activeWordKey = selectedCategory ? activeAwardee?.text ?? null : hoveredCategoryKey;
   $: awardeeMetrics = selectedCategory ? getAwardeeMetrics(selectedCategory) : [];
-  $: awardeeBars = selectedCategory ? getAwardeeBars(selectedCategory, awardeeMetrics) : [];
   $: visualItemCount = selectedCategory ? awardeeBars.length : displayWords.length;
+  $: awardeeFundingPerCapita = awardeeMetrics
+    .map(({ fundingPerCapita }) => fundingPerCapita)
+    .filter((value) => Number.isFinite(value));
+  $: awardeeFundingPerCapitaExtent = extent(awardeeFundingPerCapita);
+  $: allAwardeeMetrics = categories.flatMap((category) =>
+    getAwardeeMetrics(category).map((metrics) => ({
+      category,
+      ...metrics
+    }))
+  );
+  $: globalAwardeeFundingPerCapita = allAwardeeMetrics
+    .map(({ fundingPerCapita }) => fundingPerCapita)
+    .filter((value) => Number.isFinite(value));
+  $: globalAwardeeFundingPerCapitaExtent = extent(globalAwardeeFundingPerCapita);
+  $: activeFundingPerCapitaExtent = scaleMode === 'global'
+    ? globalAwardeeFundingPerCapitaExtent
+    : awardeeFundingPerCapitaExtent;
+  $: awardeeBars = selectedCategory
+    ? getAwardeeBars(selectedCategory, awardeeMetrics, activeFundingPerCapitaExtent)
+    : [];
 
 
 $: {
@@ -467,6 +483,40 @@ $: {
     return estimateTextBounds(word, fontSize);
   }
 
+  function rotateBounds(textBounds, rotate = 0) {
+    const normalizedRotation = ((rotate % 360) + 360) % 360;
+
+    if (normalizedRotation === 0) {
+      return textBounds;
+    }
+
+    const radians = (normalizedRotation * Math.PI) / 180;
+    const cosine = Math.cos(radians);
+    const sine = Math.sin(radians);
+    const corners = [
+      { x: textBounds.x, y: textBounds.y },
+      { x: textBounds.x + textBounds.width, y: textBounds.y },
+      { x: textBounds.x, y: textBounds.y + textBounds.height },
+      { x: textBounds.x + textBounds.width, y: textBounds.y + textBounds.height }
+    ].map(({ x, y }) => ({
+      x: x * cosine - y * sine,
+      y: x * sine + y * cosine
+    }));
+    const xs = corners.map((corner) => corner.x);
+    const ys = corners.map((corner) => corner.y);
+    const left = Math.min(...xs);
+    const right = Math.max(...xs);
+    const top = Math.min(...ys);
+    const bottom = Math.max(...ys);
+
+    return {
+      x: left,
+      y: top,
+      width: right - left,
+      height: bottom - top
+    };
+  }
+
   function getWordBuffer(fontSize, kind) {
     return clamp(fontSize * (kind === 'category' ? 0.19 : 0.16), 6, kind === 'category' ? 18 : 14);
   }
@@ -499,6 +549,25 @@ $: {
 
   function boxesOverlap(a, b) {
     return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  }
+
+  function getPreferredVerticalWordKeys(words, seedKey) {
+    const minimumVerticalIndex = Math.max(1, Math.floor(words.length * 0.3));
+    const eligibleWords = words
+      .map((word, index) => ({
+        word,
+        index,
+        hash: hashString(`${seedKey}-${word.text}-${index}`)
+      }))
+      .filter(({ word, index }) => word.kind === 'category' && index >= minimumVerticalIndex);
+    const targetCount = clamp(Math.round(words.length * 0.28), 1, 3);
+
+    return new Set(
+      eligibleWords
+        .sort((a, b) => a.hash - b.hash || ascending(a.word.text, b.word.text))
+        .slice(0, targetCount)
+        .map(({ word }) => word.text)
+    );
   }
 
   function anchorForWord(index, total, bounds, seedOffset) {
@@ -560,6 +629,7 @@ $: {
     const sortedWords = [...words].sort(
       (a, b) => b.size - a.size || b.value - a.value || ascending(a.text, b.text)
     );
+    const preferredVerticalWords = getPreferredVerticalWordKeys(sortedWords, seedKey);
 
     for (let index = 0; index < sortedWords.length; index += 1) {
       const word = sortedWords[index];
@@ -573,27 +643,38 @@ $: {
       fontSizes.push(minimumFontSize);
 
       for (const fontSize of fontSizes) {
-        const textBounds = measureRenderedText(word, fontSize);
+        let placedWord = false;
+        const measuredBounds = measureRenderedText(word, fontSize);
         const buffer = getWordBuffer(fontSize, word.kind);
-        const placement = findPlacement(
-          textBounds,
-          buffer,
-          index,
-          sortedWords.length,
-          placedBoxes,
-          bounds,
-          seedOffset
-        );
+        const rotationCandidates = preferredVerticalWords.has(word.text) ? [-90, 0] : [0];
 
-        if (placement) {
-          placedBoxes.push(placement.box);
-          placedWords.push({
-            ...word,
-            size: fontSize,
-            x: placement.x,
-            y: placement.y,
-            rotate: 0
-          });
+        for (const rotate of rotationCandidates) {
+          const textBounds = rotate === 0 ? measuredBounds : rotateBounds(measuredBounds, rotate);
+          const placement = findPlacement(
+            textBounds,
+            buffer,
+            index,
+            sortedWords.length,
+            placedBoxes,
+            bounds,
+            seedOffset
+          );
+
+          if (placement) {
+            placedBoxes.push(placement.box);
+            placedWords.push({
+              ...word,
+              size: fontSize,
+              x: placement.x,
+              y: placement.y,
+              rotate
+            });
+            placedWord = true;
+            break;
+          }
+        }
+
+        if (placedWord) {
           break;
         }
       }
@@ -778,21 +859,15 @@ $: {
 }
 
 // Legend and bars use the same funding-per-capita metric as length and color.
-$: awardeeFundingPerCapita = awardeeMetrics
-  .map(({ fundingPerCapita }) => fundingPerCapita)
-  .filter((value) => Number.isFinite(value));
-
-$: awardeeFundingPerCapitaExtent = extent(awardeeFundingPerCapita);
-
-$: legendMinFundingPerCapita = awardeeFundingPerCapitaExtent[0] ?? 0;
-$: legendMaxFundingPerCapita = awardeeFundingPerCapitaExtent[1] ?? 0;
+$: legendMinFundingPerCapita = activeFundingPerCapitaExtent[0] ?? 0;
+$: legendMaxFundingPerCapita = activeFundingPerCapitaExtent[1] ?? 0;
 
 $: legendTopColor = selectedCategory
-  ? saturateCategoryColor(selectedCategory, legendMaxFundingPerCapita, awardeeFundingPerCapitaExtent)
+  ? saturateCategoryColor(selectedCategory, legendMaxFundingPerCapita, activeFundingPerCapitaExtent)
   : null;
 
 $: legendBottomColor = selectedCategory
-  ? saturateCategoryColor(selectedCategory, legendMinFundingPerCapita, awardeeFundingPerCapitaExtent)
+  ? saturateCategoryColor(selectedCategory, legendMinFundingPerCapita, activeFundingPerCapitaExtent)
   : null;
 
 $: chartTop = selectedCategory ? clamp(height * 0.18, 96, 126) : 0;
@@ -812,7 +887,9 @@ $: barRowHeight = awardeeBars.length > 0
   ? Math.max(0, (chartGridBottom - chartTop) / awardeeBars.length)
   : 0;
 $: barThickness = clamp(barRowHeight * 0.38, 14, 26);
-$: maxBarValue = max(awardeeBars, (bar) => bar.fundingPerCapita) ?? 0;
+$: maxBarValue = scaleMode === 'global'
+  ? globalAwardeeFundingPerCapitaExtent[1] ?? 0
+  : awardeeFundingPerCapitaExtent[1] ?? 0;
 $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
 
   function getBarWidth(value) {
@@ -872,6 +949,36 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
             <span class="back-button_icon" aria-hidden="true">←</span>
             <span>Back to categories</span>
           </button>
+
+          <div class="scale-toggle" role="group" aria-label="Per capita scale mode">
+            <p class="scale-toggle_label">Per capita scale</p>
+
+            <div class="scale-toggle_controls">
+              <button
+                type="button"
+                class:scale-toggle_button={true}
+                class:scale-toggle_button--active={scaleMode === 'relative'}
+                aria-pressed={scaleMode === 'relative'}
+                on:click={() => {
+                  scaleMode = 'relative';
+                }}
+              >
+                Relative
+              </button>
+
+              <button
+                type="button"
+                class:scale-toggle_button={true}
+                class:scale-toggle_button--active={scaleMode === 'global'}
+                aria-pressed={scaleMode === 'global'}
+                on:click={() => {
+                  scaleMode = 'global';
+                }}
+              >
+                Global
+              </button>
+            </div>
+          </div>
         </div>
       {/if}
 
@@ -888,13 +995,31 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
           style={`--tooltip-accent: ${tooltipAccentColor};`}
           aria-live="polite"
         >
-          <p class="awardee-panel_eyebrow">
-            {tooltip ? 'Project details' : 'Hover or click for details'}
-          </p>
+          <div class="awardee-panel_header-row">
+            <p class="awardee-panel_eyebrow">Project details</p>
+            <p class="awardee-panel_scale">{SCALE_MODE_LABELS[scaleMode]}</p>
+          </div>
 
-          {#if tooltip}
-            <h3 class="awardee-panel_title">{tooltip.awardee}</h3>
+          <h3 class="awardee-panel_title">{tooltip ? tooltip.awardee : 'Select a community'}</h3>
 
+          <dl class="awardee-panel_metrics">
+            <div class="awardee-panel_metric">
+              <dt>Funding per capita</dt>
+              <dd>{tooltip ? fundingPerCapitaFormat.format(tooltip.fundingPerCapita) : '—'}</dd>
+            </div>
+
+            <div class="awardee-panel_metric">
+              <dt>Total funds</dt>
+              <dd>{tooltip ? fundsFormat.format(tooltip.funds) : '—'}</dd>
+            </div>
+
+            <div class="awardee-panel_metric">
+              <dt>Population</dt>
+              <dd>{tooltip ? numberFormat.format(tooltip.population) : '—'}</dd>
+            </div>
+          </dl>
+
+          {#if tooltip?.entries.length}
             <div class="awardee-panel_content">
               {#each tooltip.entries as entry (entry.key)}
                 <article class="awardee-panel_entry">
@@ -903,9 +1028,13 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
                 </article>
               {/each}
             </div>
+          {:else if tooltip}
+            <p class="awardee-panel_placeholder">
+              No project descriptions are available for this community yet.
+            </p>
           {:else}
             <p class="awardee-panel_placeholder">
-              Hover over a community bar to preview each project year and description here, or click one to keep it selected.
+              Hover over a community bar to preview its funding stats and project list here, or click one to keep it selected.
             </p>
           {/if}
         </section>
@@ -956,7 +1085,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
 	                  text-anchor="end"
 	                  dominant-baseline="middle"
 	                >
-	                  Value
+	                  Per capita
 	                </text>
               </g>
 
@@ -978,7 +1107,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
                     on:focus={() => handleWordEnter(bar)}
                     on:blur={() => handleWordLeave(bar)}
                   >
-                    <title>{bar.title}</title>
                     <rect
                       class="bar-row_hit-area"
                       x="0"
@@ -1071,6 +1199,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
       {#if selectedCategory}
         <div class="legend legend--side">
           <p class="legend_title">Per capita funds</p>
+          <p class="legend_mode">{SCALE_MODE_LABELS[scaleMode]}</p>
 
           <div class="legend_side-label legend_side-label--top">
             <span>Highest per capita</span>
@@ -1176,6 +1305,54 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     gap: 1rem;
     width: 100%;
     margin: 0;
+  }
+
+  .scale-toggle {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .scale-toggle_label {
+    margin: 0;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .scale-toggle_controls {
+    display: inline-grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+    padding: 0.3rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.34);
+    background: rgba(248, 250, 252, 0.88);
+  }
+
+  .scale-toggle_button {
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #475569;
+    padding: 0.46rem 0.8rem;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .scale-toggle_button--active {
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  }
+
+  .scale-toggle_button:focus-visible {
+    outline: 2px solid rgba(15, 23, 42, 0.42);
+    outline-offset: 2px;
   }
 
   .cloud-shell {
@@ -1345,14 +1522,21 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     margin: 0;
     border-top: 3px solid var(--tooltip-accent);
     padding: 1rem 0 0;
-    height: 16rem;
+    height: clamp(19rem, 46vh, 25rem);
     display: grid;
     align-content: start;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+  }
+
+  .awardee-panel_header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
 
   .awardee-panel_eyebrow {
-    margin: 0 0 0.6rem;
+    margin: 0;
     font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0;
@@ -1360,10 +1544,60 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     color: #64748b;
   }
 
+  .awardee-panel_scale {
+    margin: 0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.16);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #475569;
+    white-space: nowrap;
+  }
+
   .awardee-panel_title {
-    margin: 0 0 0.8rem;
+    margin: 0.7rem 0 0.85rem;
     font-size: 1.15rem;
     line-height: 1.1;
+    color: #0f172a;
+  }
+
+  .awardee-panel_metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: 0.55rem;
+    margin: 0 0 0.85rem;
+  }
+
+  .awardee-panel_metric {
+    display: grid;
+    gap: 0.28rem;
+    margin: 0;
+    padding: 0.7rem 0.75rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    background: rgba(248, 250, 252, 0.88);
+  }
+
+  .awardee-panel_metric dt,
+  .awardee-panel_metric dd {
+    margin: 0;
+  }
+
+  .awardee-panel_metric dt {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .awardee-panel_metric dd {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.2;
     color: #0f172a;
   }
 
@@ -1497,6 +1731,16 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     width: 100%;
   }
 
+  .legend_mode {
+    width: 100%;
+    margin: -0.15rem 0 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
   .legend_bar {
     height: 16px;
     border-radius: 999px;
@@ -1557,6 +1801,10 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
       width: 100%;
       justify-items: start;
       text-align: left;
+    }
+
+    .legend_bar--vertical {
+      justify-self: start;
     }
   }
 </style>
