@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from 'svelte';
+    import { base } from '$app/paths';
     import WordCloud from '$lib/WordCloud.svelte';
     import IntroNarrative from '$lib/IntroNarrative.svelte';
     import TabSection from '../lib/TabSection.svelte';
