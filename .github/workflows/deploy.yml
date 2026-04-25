@@ -23,6 +23,7 @@ jobs:
       - name: build
         env:
           BASE_PATH: "/${{ github.event.repository.name }}"
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
         run: |
           npm run build
 
