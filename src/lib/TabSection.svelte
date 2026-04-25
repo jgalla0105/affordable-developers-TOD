@@ -1,14 +1,14 @@
 <script>
     import tabs from '$lib/tabs.json';
-
+    import ChoroplethMap from '$lib/ChoroplethMap.svelte';
 
     $: activeTab = 0;
 </script>
 
 <div class="tabs">
   {#each tabs as tab, i}
-    <button 
-      class:active={activeTab === i} 
+    <button
+      class:active={activeTab === i}
       on:click={() => activeTab = i}>
       {tab.heading}
     </button>
@@ -17,9 +17,31 @@
 
 <div class="content">
     <h4>{tabs[activeTab].heading}</h4>
-    <p><b> Chloropleth Map component goes here</b></p>
+
+    <div class="map-wrapper">
+      {#if activeTab === 0}
+        <ChoroplethMap
+          styleUrl="mapbox://styles/jgalla0611/cmoenjnxr000p01sa0m670jim"
+          valueProperty="MULTI%"
+          townNameProperty="NAME"
+          criteriaName="Multifamily Housing"
+          valueLabel="% Multifamily"
+          unit="%"
+          legendBins={[
+            { label: "0 – 5%",   color: "#f7fbff" },
+            { label: "5 – 20%",  color: "#deebf7" },
+            { label: "20 – 35%", color: "#6baed6" },
+            { label: "35 – 55%", color: "#2171b5" },
+            { label: "55 – 73%", color: "#08519c" },
+            { label: "73%+",     color: "#08306b" },
+          ]}
+        />
+      {:else}
+        <p><b>Choropleth Map coming soon for this tab.</b></p>
+      {/if}
+    </div>
+
   <p class="justification">{tabs[activeTab].justification}</p>
-  
 </div>
 
 
@@ -68,6 +90,11 @@
   h4 {
     font-size: 2rem;
     text-align: center;
+  }
+
+  .map-wrapper {
+    position: relative;
+    margin-bottom: 1.5rem;
   }
 </style>
 

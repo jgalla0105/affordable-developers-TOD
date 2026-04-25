@@ -407,6 +407,32 @@ $: {
     }
   }
 
+  function getContainerContentWidth(entry) {
+    const observedWidth = Math.floor(entry?.contentRect?.width ?? 0);
+
+    if (observedWidth > 0) {
+      return observedWidth;
+    }
+
+    if (!container || typeof window === 'undefined') {
+      return 0;
+    }
+
+    const styles = window.getComputedStyle(container);
+    const horizontalPadding = (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
+    const horizontalBorder = (parseFloat(styles.borderLeftWidth) || 0) + (parseFloat(styles.borderRightWidth) || 0);
+
+    return Math.max(0, Math.floor(container.getBoundingClientRect().width - horizontalPadding - horizontalBorder));
+  }
+
+  function syncContainerWidth(entry) {
+    const nextWidth = getContainerContentWidth(entry);
+
+    if (nextWidth > 0 && nextWidth !== width) {
+      width = nextWidth;
+    }
+  }
+
   function stopLayout() {
     layoutRun += 1;
   }
@@ -731,6 +757,7 @@ $: {
       await preservePanelViewport(() => {
         clearAwardeeSelection();
         hoveredCategoryKey = null;
+        scaleMode = 'relative';
         selectedCategory = word.category;
       });
     }
@@ -819,16 +846,12 @@ $: {
     await loadRows();
 
     resizeObserver = new ResizeObserver((entries) => {
-      const nextWidth = Math.floor(entries[0]?.contentRect?.width ?? 0);
-
-      if (nextWidth > 0) {
-        width = nextWidth;
-      }
+      syncContainerWidth(entries[0]);
     });
 
     if (container) {
       resizeObserver.observe(container);
-      width = Math.floor(container.getBoundingClientRect().width);
+      syncContainerWidth();
     }
   });
 
@@ -1041,7 +1064,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
       {/if}
     </div>
 
-    <div class="cloud-shell" class:cloud-shell--detail={selectedCategory}>
+    <div class="cloud-shell cloud-shell--with-legend-slot">
       <div class="cloud-frame" bind:this={container}>
         {#if loading}
           <div class="state-message">Loading CSV…</div>
@@ -1196,8 +1219,12 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
         {/if}
       </div>
 
-      {#if selectedCategory}
-        <div class="legend legend--side">
+      <div
+        class="legend legend--side"
+        class:legend--placeholder={!selectedCategory}
+        aria-hidden={!selectedCategory}
+      >
+        {#if selectedCategory}
           <p class="legend_title">Per capita funds</p>
           <p class="legend_mode">{SCALE_MODE_LABELS[scaleMode]}</p>
 
@@ -1216,8 +1243,8 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
             <span>Lowest per capita</span>
             <span>{fundingPerCapitaFormat.format(legendMinFundingPerCapita)}</span>
           </div>
-        </div>
-      {/if}
+        {/if}
+      </div>
     </div>
   </div>
 </section>
@@ -1361,7 +1388,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     align-items: start;
   }
 
-  .cloud-shell--detail {
+  .cloud-shell--with-legend-slot {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: clamp(0.75rem, 2vw, 1.25rem);
     align-items: start;
@@ -1718,6 +1745,11 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     text-align: right;
   }
 
+  .legend--placeholder {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   .legend_title {
     margin: 0;
     font-size: 0.82rem;
@@ -1793,7 +1825,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
   }
 
   @media (max-width: 899px) {
-    .cloud-shell--detail {
+    .cloud-shell--with-legend-slot {
       grid-template-columns: minmax(0, 1fr);
     }
 
