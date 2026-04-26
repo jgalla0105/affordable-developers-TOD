@@ -16,11 +16,11 @@
   export let csvUrl = `wordcloud-classified-data.csv`;
   export let fontFamily = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-  let cloudFactory;
   let container;
+  let measureLayer;
   let panelRoot;
   let resizeObserver;
-  let currentLayout;
+  let layoutRun = 0;
 
   let width = 960;
   let height = 620;
@@ -35,8 +35,16 @@
   let loading = true;
   let error = '';
   let displayWords = [];
+  let scaleMode = 'relative';
 
   
+
+  const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+  const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+  const SCALE_MODE_LABELS = {
+    relative: 'Relative scale',
+    global: 'Global scale'
+  };
 
   const numberFormat = new Intl.NumberFormat('en-US');
   const fundsFormat = new Intl.NumberFormat('en-US', {
@@ -115,15 +123,6 @@
     return hash >>> 0;
   }
 
-  function mulberry32(seed) {
-    return function seededRandom() {
-      let t = (seed += 0x6d2b79f5);
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
   function buildPalette(count) {
     const basePalette = ['#00843D', '#7C878E', '#ED8B00', '#FFC72C', '#DA291C', '#80276C', '#003DA5'];
 
@@ -139,9 +138,12 @@
 
   $: panelTitle = selectedCategory ? selectedCategory : 'TOD CATEGORIES';
   $: tooltipAccentColor = selectedCategory ? categoryColor(selectedCategory) ?? '#0ea5c6' : '#0ea5c6';
+  $: scaleModeDescription = scaleMode === 'global'
+    ? 'Bars and colors use the same funding-per-capita scale across every category.'
+    : 'Bars and colors are scaled within this category for easier local comparison.';
 
   $: summaryText = selectedCategory
-    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". Larger, darker names indicate higher funding per capita.`
+    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". ${scaleModeDescription} Hover or click a community to review its funding metrics and projects here.`
     : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the awardees spending on it.';
 
   function createFontScale(values, minFont, maxFont) {
@@ -187,8 +189,8 @@
       (row) => row.category
     ).sort((a, b) => b[1] - a[1] || ascending(a[0], b[0]));
 
-    const minFont = clamp(width * 0.03, 20, 30);
-    const maxFont = clamp(width * 0.11, 48, 96);
+    const minFont = clamp(width * 0.026, 18, 28);
+    const maxFont = clamp(width * 0.078, 44, 78);
     const fontScale = createFontScale(
       counts.map(([, count]) => count),
       minFont,
@@ -206,13 +208,11 @@
     }));
   }
 
-  function getAwardeeWords(category, awardees = getAwardeeMetrics(category)) {
-    const fundingPerCapitaValues = awardees.map(({ fundingPerCapita }) => fundingPerCapita);
-    const minFont = clamp(width * 0.02, 14, 22);
-    const maxFont = clamp(width * 0.085, 38, 76);
-    const fontScale = createFontScale(fundingPerCapitaValues, minFont, maxFont);
-    const fundingPerCapitaExtent = extent(fundingPerCapitaValues);
-
+  function getAwardeeBars(
+    category,
+    awardees = getAwardeeMetrics(category),
+    fundingPerCapitaExtent = extent(awardees.map(({ fundingPerCapita }) => fundingPerCapita))
+  ) {
     return awardees.map(({ awardee, population, funds, fundingPerCapita }) => ({
       kind: 'awardee',
       text: awardee,
@@ -222,11 +222,9 @@
       population,
       funds,
       fundingPerCapita,
-      size: fontScale(fundingPerCapita),
       fill: saturateCategoryColor(category, fundingPerCapita, fundingPerCapitaExtent),
       title: `${awardee}: Funding per capita ${fundingPerCapitaFormat.format(fundingPerCapita)}, Total funds ${fundsFormat.format(funds)}, Population ${numberFormat.format(population)}`
     }));
-    
   }
 
   function getAwardeeMetrics(category) {
@@ -288,25 +286,11 @@
     hoveredAwardee = null;
   }
 
-  function hasAwardeeProjectEntries(word) {
-    return getAwardeeProjectEntries(word.category, word.awardee).length > 0;
-  }
-
   function previewAwardee(word) {
-    if (!hasAwardeeProjectEntries(word)) {
-      clearAwardeePreview();
-      return;
-    }
-
     hoveredAwardee = createAwardeeSelection(word);
   }
 
   function pinAwardee(word) {
-    if (!hasAwardeeProjectEntries(word)) {
-      clearAwardeeSelection();
-      return;
-    }
-
     pinnedAwardee = createAwardeeSelection(word);
     hoveredAwardee = null;
   }
@@ -315,20 +299,43 @@
 
   $: tooltip = activeAwardee
     ? (() => {
+        const metrics = awardeeMetrics.find(({ awardee }) => awardee === activeAwardee.awardee);
         const entries = getAwardeeProjectEntries(activeAwardee.category, activeAwardee.awardee);
 
-        return entries.length > 0
-          ? {
-              awardee: activeAwardee.awardee,
-              category: activeAwardee.category,
-              entries
-            }
-          : null;
+        return {
+          awardee: activeAwardee.awardee,
+          category: activeAwardee.category,
+          population: metrics?.population ?? 0,
+          funds: metrics?.funds ?? 0,
+          fundingPerCapita: metrics?.fundingPerCapita ?? 0,
+          entries
+        };
       })()
     : null;
 
   $: activeWordKey = selectedCategory ? activeAwardee?.text ?? null : hoveredCategoryKey;
   $: awardeeMetrics = selectedCategory ? getAwardeeMetrics(selectedCategory) : [];
+  $: visualItemCount = selectedCategory ? awardeeBars.length : displayWords.length;
+  $: awardeeFundingPerCapita = awardeeMetrics
+    .map(({ fundingPerCapita }) => fundingPerCapita)
+    .filter((value) => Number.isFinite(value));
+  $: awardeeFundingPerCapitaExtent = extent(awardeeFundingPerCapita);
+  $: allAwardeeMetrics = categories.flatMap((category) =>
+    getAwardeeMetrics(category).map((metrics) => ({
+      category,
+      ...metrics
+    }))
+  );
+  $: globalAwardeeFundingPerCapita = allAwardeeMetrics
+    .map(({ fundingPerCapita }) => fundingPerCapita)
+    .filter((value) => Number.isFinite(value));
+  $: globalAwardeeFundingPerCapitaExtent = extent(globalAwardeeFundingPerCapita);
+  $: activeFundingPerCapitaExtent = scaleMode === 'global'
+    ? globalAwardeeFundingPerCapitaExtent
+    : awardeeFundingPerCapitaExtent;
+  $: awardeeBars = selectedCategory
+    ? getAwardeeBars(selectedCategory, awardeeMetrics, activeFundingPerCapitaExtent)
+    : [];
 
 
 $: {
@@ -336,11 +343,8 @@ $: {
   const _width = width;
   const _categoryColor = categoryColor;
   const _selectedCategory = selectedCategory;
-  const _awardeeMetrics = awardeeMetrics;
 
-  displayWords = selectedCategory
-    ? getAwardeeWords(selectedCategory, awardeeMetrics)
-    : getCategoryWords();
+  displayWords = selectedCategory ? [] : getCategoryWords();
 }
 
 
@@ -403,8 +407,306 @@ $: {
     }
   }
 
+  function getContainerContentWidth(entry) {
+    const observedWidth = Math.floor(entry?.contentRect?.width ?? 0);
+
+    if (observedWidth > 0) {
+      return observedWidth;
+    }
+
+    if (!container || typeof window === 'undefined') {
+      return 0;
+    }
+
+    const styles = window.getComputedStyle(container);
+    const horizontalPadding = (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
+    const horizontalBorder = (parseFloat(styles.borderLeftWidth) || 0) + (parseFloat(styles.borderRightWidth) || 0);
+
+    return Math.max(0, Math.floor(container.getBoundingClientRect().width - horizontalPadding - horizontalBorder));
+  }
+
+  function syncContainerWidth(entry) {
+    const nextWidth = getContainerContentWidth(entry);
+
+    if (nextWidth > 0 && nextWidth !== width) {
+      width = nextWidth;
+    }
+  }
+
   function stopLayout() {
-    currentLayout?.stop?.();
+    layoutRun += 1;
+  }
+
+  function getLayoutBounds() {
+    const horizontalPadding = clamp(width * 0.052, selectedCategory ? 22 : 30, selectedCategory ? 46 : 58);
+    const verticalPadding = clamp(height * 0.085, 34, 64);
+
+    return {
+      left: horizontalPadding,
+      right: width - horizontalPadding,
+      top: verticalPadding,
+      bottom: height - verticalPadding,
+      width: Math.max(0, width - horizontalPadding * 2),
+      height: Math.max(0, height - verticalPadding * 2)
+    };
+  }
+
+  function estimateTextBounds(word, fontSize) {
+    const estimatedWidth = Array.from(word.text).reduce((total, character) => {
+      if (character === ' ') {
+        return total + fontSize * 0.33;
+      }
+
+      if (/[A-Z0-9]/.test(character)) {
+        return total + fontSize * 0.66;
+      }
+
+      return total + fontSize * 0.54;
+    }, 0);
+
+    return {
+      x: -estimatedWidth / 2,
+      y: -fontSize * 0.55,
+      width: estimatedWidth,
+      height: fontSize * 1.1
+    };
+  }
+
+  function measureRenderedText(word, fontSize) {
+    if (!measureLayer || typeof document === 'undefined') {
+      return estimateTextBounds(word, fontSize);
+    }
+
+    const textNode = document.createElementNS(SVG_NAMESPACE, 'text');
+    textNode.textContent = word.text;
+    textNode.setAttribute('x', '0');
+    textNode.setAttribute('y', '0');
+    textNode.setAttribute('text-anchor', 'middle');
+    textNode.setAttribute('dominant-baseline', 'central');
+    textNode.setAttribute('font-family', fontFamily);
+    textNode.setAttribute('font-size', String(fontSize));
+    textNode.setAttribute('font-weight', word.kind === 'category' ? '700' : '600');
+
+    measureLayer.appendChild(textNode);
+
+    try {
+      const bbox = textNode.getBBox();
+
+      if (Number.isFinite(bbox.width) && Number.isFinite(bbox.height) && bbox.width > 0 && bbox.height > 0) {
+        return {
+          x: bbox.x,
+          y: bbox.y,
+          width: bbox.width,
+          height: bbox.height
+        };
+      }
+    } catch (err) {
+      // Fall through to a conservative estimate if the browser cannot measure yet.
+    } finally {
+      textNode.remove();
+    }
+
+    return estimateTextBounds(word, fontSize);
+  }
+
+  function rotateBounds(textBounds, rotate = 0) {
+    const normalizedRotation = ((rotate % 360) + 360) % 360;
+
+    if (normalizedRotation === 0) {
+      return textBounds;
+    }
+
+    const radians = (normalizedRotation * Math.PI) / 180;
+    const cosine = Math.cos(radians);
+    const sine = Math.sin(radians);
+    const corners = [
+      { x: textBounds.x, y: textBounds.y },
+      { x: textBounds.x + textBounds.width, y: textBounds.y },
+      { x: textBounds.x, y: textBounds.y + textBounds.height },
+      { x: textBounds.x + textBounds.width, y: textBounds.y + textBounds.height }
+    ].map(({ x, y }) => ({
+      x: x * cosine - y * sine,
+      y: x * sine + y * cosine
+    }));
+    const xs = corners.map((corner) => corner.x);
+    const ys = corners.map((corner) => corner.y);
+    const left = Math.min(...xs);
+    const right = Math.max(...xs);
+    const top = Math.min(...ys);
+    const bottom = Math.max(...ys);
+
+    return {
+      x: left,
+      y: top,
+      width: right - left,
+      height: bottom - top
+    };
+  }
+
+  function getWordBuffer(fontSize, kind) {
+    return clamp(fontSize * (kind === 'category' ? 0.19 : 0.16), 6, kind === 'category' ? 18 : 14);
+  }
+
+  function getMinimumFontSize(word) {
+    const sensibleMinimum = word.kind === 'category'
+      ? clamp(width * 0.018, 15, 21)
+      : clamp(width * 0.014, 11, 15);
+
+    return Math.min(word.size, sensibleMinimum);
+  }
+
+  function createCollisionBox(x, y, textBounds, buffer) {
+    return {
+      left: x + textBounds.x - buffer,
+      right: x + textBounds.x + textBounds.width + buffer,
+      top: y + textBounds.y - buffer,
+      bottom: y + textBounds.y + textBounds.height + buffer
+    };
+  }
+
+  function boxFitsLayout(box, bounds) {
+    return (
+      box.left >= bounds.left &&
+      box.right <= bounds.right &&
+      box.top >= bounds.top &&
+      box.bottom <= bounds.bottom
+    );
+  }
+
+  function boxesOverlap(a, b) {
+    return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  }
+
+  function getPreferredVerticalWordKeys(words, seedKey) {
+    const minimumVerticalIndex = Math.max(1, Math.floor(words.length * 0.3));
+    const eligibleWords = words
+      .map((word, index) => ({
+        word,
+        index,
+        hash: hashString(`${seedKey}-${word.text}-${index}`)
+      }))
+      .filter(({ word, index }) => word.kind === 'category' && index >= minimumVerticalIndex);
+    const targetCount = clamp(Math.round(words.length * 0.28), 1, 3);
+
+    return new Set(
+      eligibleWords
+        .sort((a, b) => a.hash - b.hash || ascending(a.word.text, b.word.text))
+        .slice(0, targetCount)
+        .map(({ word }) => word.text)
+    );
+  }
+
+  function anchorForWord(index, total, bounds, seedOffset) {
+    const centerX = bounds.left + bounds.width / 2;
+    const centerY = bounds.top + bounds.height / 2;
+
+    if (index === 0 || total <= 1) {
+      return { x: centerX, y: centerY, angle: seedOffset };
+    }
+
+    const progress = index / Math.max(1, total - 1);
+    const spread = 0.2 + Math.sqrt(progress) * 0.8;
+    const angle = seedOffset + index * GOLDEN_ANGLE;
+
+    return {
+      x: centerX + Math.cos(angle) * bounds.width * 0.34 * spread,
+      y: centerY + Math.sin(angle) * bounds.height * 0.32 * spread,
+      angle
+    };
+  }
+
+  function findPlacement(textBounds, buffer, index, total, placedBoxes, bounds, seedOffset) {
+    if (textBounds.width + buffer * 2 > bounds.width || textBounds.height + buffer * 2 > bounds.height) {
+      return null;
+    }
+
+    const anchor = anchorForWord(index, total, bounds, seedOffset);
+    const maxRadius = Math.hypot(bounds.width, bounds.height);
+    const radialStep = Math.max(5, Math.min(textBounds.width, textBounds.height) * 0.2);
+
+    for (let radius = 0; radius <= maxRadius; radius += radialStep) {
+      const attempts = radius === 0 ? 1 : Math.ceil(14 + radius / radialStep);
+
+      for (let attempt = 0; attempt < attempts; attempt += 1) {
+        const angle = anchor.angle + attempt * GOLDEN_ANGLE + radius * 0.012;
+        const x = anchor.x + Math.cos(angle) * radius;
+        const y = anchor.y + Math.sin(angle) * radius * 0.76;
+        const box = createCollisionBox(x, y, textBounds, buffer);
+
+        if (!boxFitsLayout(box, bounds)) {
+          continue;
+        }
+
+        if (!placedBoxes.some((placedBox) => boxesOverlap(box, placedBox))) {
+          return { x, y, box };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function buildMeasuredLayout(words) {
+    const bounds = getLayoutBounds();
+    const seedKey = `${selectedCategory ?? 'categories'}-${width}-${height}`;
+    const seedOffset = (hashString(seedKey) / 4294967296) * Math.PI * 2;
+    const placedWords = [];
+    const placedBoxes = [];
+    const sortedWords = [...words].sort(
+      (a, b) => b.size - a.size || b.value - a.value || ascending(a.text, b.text)
+    );
+    const preferredVerticalWords = getPreferredVerticalWordKeys(sortedWords, seedKey);
+
+    for (let index = 0; index < sortedWords.length; index += 1) {
+      const word = sortedWords[index];
+      const minimumFontSize = getMinimumFontSize(word);
+      const fontSizes = [];
+
+      for (let size = word.size; size > minimumFontSize; size *= 0.93) {
+        fontSizes.push(size);
+      }
+
+      fontSizes.push(minimumFontSize);
+
+      for (const fontSize of fontSizes) {
+        let placedWord = false;
+        const measuredBounds = measureRenderedText(word, fontSize);
+        const buffer = getWordBuffer(fontSize, word.kind);
+        const rotationCandidates = preferredVerticalWords.has(word.text) ? [-90, 0] : [0];
+
+        for (const rotate of rotationCandidates) {
+          const textBounds = rotate === 0 ? measuredBounds : rotateBounds(measuredBounds, rotate);
+          const placement = findPlacement(
+            textBounds,
+            buffer,
+            index,
+            sortedWords.length,
+            placedBoxes,
+            bounds,
+            seedOffset
+          );
+
+          if (placement) {
+            placedBoxes.push(placement.box);
+            placedWords.push({
+              ...word,
+              size: fontSize,
+              x: placement.x,
+              y: placement.y,
+              rotate
+            });
+            placedWord = true;
+            break;
+          }
+        }
+
+        if (placedWord) {
+          break;
+        }
+      }
+    }
+
+    return placedWords;
   }
 
   async function preservePanelViewport(updateView) {
@@ -425,41 +727,29 @@ $: {
     }
   }
 
-  function runLayout() {
-    if (!cloudFactory || loading || error || displayWords.length === 0 || width <= 0 || height <= 0) {
+  async function runLayout() {
+    if (!measureLayer || loading || error || displayWords.length === 0 || width <= 0 || height <= 0) {
       return;
     }
 
-    stopLayout();
+    const runId = layoutRun + 1;
+    layoutRun = runId;
     positionedWords = [];
+    await tick();
 
-    const seedKey = `${selectedCategory ?? 'categories'}-${width}-${height}`;
-    const seededRandom = mulberry32(hashString(seedKey));
-    const wordsForLayout = displayWords.map((word) => ({ ...word }));
-
-    // rotate each word by same amount every render (making sure "mixed use development" isn't off-screen)
-    function getWordRotation(text) {
-        if (text.length == 21) {
-          return 0;
-        }
-      return hashString(text) % 2 === 0 ? 0 : -90;
-    
+    if (typeof document !== 'undefined' && document.fonts?.ready) {
+      await document.fonts.ready;
     }
 
-    currentLayout = cloudFactory()
-      .size([width, height])
-      .words(wordsForLayout)
-      .padding(selectedCategory ? 15 : 15)
-      .rotate((word) => getWordRotation(word.text))
-      .font(fontFamily)
-      .fontSize((word) => word.size)
-      .timeInterval(20)
-      .random(seededRandom)
-      .on('end', (words) => {
-        positionedWords = words;
-      });
+    if (runId !== layoutRun) {
+      return;
+    }
 
-    currentLayout.start();
+    const nextWords = buildMeasuredLayout(displayWords);
+
+    if (runId === layoutRun) {
+      positionedWords = nextWords;
+    }
   }
 
   async function handleCategorySelect(word) {
@@ -467,6 +757,7 @@ $: {
       await preservePanelViewport(() => {
         clearAwardeeSelection();
         hoveredCategoryKey = null;
+        scaleMode = 'relative';
         selectedCategory = word.category;
       });
     }
@@ -552,22 +843,15 @@ $: {
   }
 
   onMount(async () => {
-    const [{ default: importedCloud }] = await Promise.all([import('d3-cloud')]);
-
-    cloudFactory = importedCloud;
     await loadRows();
 
     resizeObserver = new ResizeObserver((entries) => {
-      const nextWidth = Math.floor(entries[0]?.contentRect?.width ?? 0);
-
-      if (nextWidth > 0) {
-        width = nextWidth;
-      }
+      syncContainerWidth(entries[0]);
     });
 
     if (container) {
       resizeObserver.observe(container);
-      width = Math.floor(container.getBoundingClientRect().width);
+      syncContainerWidth();
     }
   });
 
@@ -576,48 +860,108 @@ $: {
     stopLayout();
   });
 
-  $: height = clamp(Math.round(width * 0.68), 420, 700);
+  $: height = clamp(Math.round(width * 0.72), 460, 720);
 
   $: {
     
     const _displayWords = displayWords;
     const _selectedCategory = selectedCategory;
-    const _cloudFactory = cloudFactory;
+    const _measureLayer = measureLayer;
     const _loading = loading;
     const _error = error;
     const _width = width;
     const _height = height;
 
     
-    if (_cloudFactory && !_loading && !_error && _width > 0 && _height > 0 && _displayWords.length > 0) {
-      runLayout();
+    if (!_selectedCategory && _measureLayer && !_loading && !_error && _width > 0 && _height > 0 && _displayWords.length > 0) {
+      void runLayout();
     } else if (!_loading && !_error) {
       stopLayout();
       positionedWords = [];
     }
 }
 
-// Legend for the detail cloud uses the same funding-per-capita metric as size and color.
-$: awardeeFundingPerCapita = awardeeMetrics
-  .map(({ fundingPerCapita }) => fundingPerCapita)
-  .filter((value) => Number.isFinite(value));
-
-$: awardeeFundingPerCapitaExtent = extent(awardeeFundingPerCapita);
-
-$: legendMinFundingPerCapita = awardeeFundingPerCapitaExtent[0] ?? 0;
-$: legendMaxFundingPerCapita = awardeeFundingPerCapitaExtent[1] ?? 0;
+// Legend and bars use the same funding-per-capita metric as length and color.
+$: legendMinFundingPerCapita = activeFundingPerCapitaExtent[0] ?? 0;
+$: legendMaxFundingPerCapita = activeFundingPerCapitaExtent[1] ?? 0;
 
 $: legendTopColor = selectedCategory
-  ? saturateCategoryColor(selectedCategory, legendMaxFundingPerCapita, awardeeFundingPerCapitaExtent)
+  ? saturateCategoryColor(selectedCategory, legendMaxFundingPerCapita, activeFundingPerCapitaExtent)
   : null;
 
 $: legendBottomColor = selectedCategory
-  ? saturateCategoryColor(selectedCategory, legendMinFundingPerCapita, awardeeFundingPerCapitaExtent)
+  ? saturateCategoryColor(selectedCategory, legendMinFundingPerCapita, activeFundingPerCapitaExtent)
   : null;
+
+$: chartTop = selectedCategory ? clamp(height * 0.18, 96, 126) : 0;
+$: chartInsetX = selectedCategory ? clamp(width * 0.035, 24, 50) : 0;
+$: chartLabelWidth = selectedCategory ? clamp(width * 0.19, 118, 220) : 0;
+$: chartValueWidth = selectedCategory ? clamp(width * 0.11, 86, 112) : 0;
+$: chartValueGap = selectedCategory ? clamp(width * 0.024, 20, 34) : 0;
+$: chartLeft = chartInsetX + chartLabelWidth;
+$: chartValueX = width - chartInsetX - chartValueWidth;
+$: chartValueEndX = width - chartInsetX;
+$: chartAxisLabelY = selectedCategory ? chartTop - clamp(height * 0.08, 44, 58) : 0;
+$: chartAxisY = selectedCategory ? chartTop - clamp(height * 0.04, 22, 30) : 0;
+$: chartGridTop = selectedCategory ? chartTop - clamp(height * 0.018, 9, 13) : 0;
+$: chartGridBottom = selectedCategory ? height - clamp(height * 0.16, 88, 118) : 0;
+$: chartPlotWidth = Math.max(80, chartValueX - chartValueGap - chartLeft);
+$: barRowHeight = awardeeBars.length > 0
+  ? Math.max(0, (chartGridBottom - chartTop) / awardeeBars.length)
+  : 0;
+$: barThickness = clamp(barRowHeight * 0.38, 14, 26);
+$: maxBarValue = scaleMode === 'global'
+  ? globalAwardeeFundingPerCapitaExtent[1] ?? 0
+  : awardeeFundingPerCapitaExtent[1] ?? 0;
+$: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
+
+  function getBarWidth(value) {
+    if (!Number.isFinite(value) || maxBarValue <= 0) {
+      return 0;
+    }
+
+    return (value / maxBarValue) * chartPlotWidth;
+  }
+
+  function getBarCenterY(index) {
+    return chartTop + index * barRowHeight + barRowHeight / 2;
+  }
+
+  function getBarY(index) {
+    return getBarCenterY(index) - barThickness / 2;
+  }
+
+  function getBarHitY(index) {
+    return chartTop + index * barRowHeight;
+  }
+
+  function getBarTickX(value) {
+    return chartLeft + getBarWidth(value);
+  }
+
+  function getBarTickAnchor(index) {
+    if (barTickValues.length === 1) {
+      return 'middle';
+    }
+
+    if (index === 0) {
+      return 'start';
+    }
+
+    if (index === barTickValues.length - 1) {
+      return 'end';
+    }
+
+    return 'middle';
+  }
 
 </script>
 
 <svelte:window on:click={handleWindowClick} />
+
+<svg class="measurement-svg" aria-hidden="true" focusable="false">
+  <g bind:this={measureLayer}></g>
+</svg>
 
 <section class="panel" bind:this={panelRoot}>
   <div class="panel_layout" class:panel_layout--detail={selectedCategory}>
@@ -628,6 +972,36 @@ $: legendBottomColor = selectedCategory
             <span class="back-button_icon" aria-hidden="true">←</span>
             <span>Back to categories</span>
           </button>
+
+          <div class="scale-toggle" role="group" aria-label="Per capita scale mode">
+            <p class="scale-toggle_label">Per capita scale</p>
+
+            <div class="scale-toggle_controls">
+              <button
+                type="button"
+                class:scale-toggle_button={true}
+                class:scale-toggle_button--active={scaleMode === 'relative'}
+                aria-pressed={scaleMode === 'relative'}
+                on:click={() => {
+                  scaleMode = 'relative';
+                }}
+              >
+                Relative
+              </button>
+
+              <button
+                type="button"
+                class:scale-toggle_button={true}
+                class:scale-toggle_button--active={scaleMode === 'global'}
+                aria-pressed={scaleMode === 'global'}
+                on:click={() => {
+                  scaleMode = 'global';
+                }}
+              >
+                Global
+              </button>
+            </div>
+          </div>
         </div>
       {/if}
 
@@ -644,13 +1018,31 @@ $: legendBottomColor = selectedCategory
           style={`--tooltip-accent: ${tooltipAccentColor};`}
           aria-live="polite"
         >
-          <p class="awardee-panel_eyebrow">
-            {tooltip ? 'Project details' : 'Hover or click for details'}
-          </p>
+          <div class="awardee-panel_header-row">
+            <p class="awardee-panel_eyebrow">Project details</p>
+            <p class="awardee-panel_scale">{SCALE_MODE_LABELS[scaleMode]}</p>
+          </div>
 
-          {#if tooltip}
-            <h3 class="awardee-panel_title">{tooltip.awardee}</h3>
+          <h3 class="awardee-panel_title">{tooltip ? tooltip.awardee : 'Select a community'}</h3>
 
+          <dl class="awardee-panel_metrics">
+            <div class="awardee-panel_metric">
+              <dt>Funding per capita</dt>
+              <dd>{tooltip ? fundingPerCapitaFormat.format(tooltip.fundingPerCapita) : '—'}</dd>
+            </div>
+
+            <div class="awardee-panel_metric">
+              <dt>Total funds</dt>
+              <dd>{tooltip ? fundsFormat.format(tooltip.funds) : '—'}</dd>
+            </div>
+
+            <div class="awardee-panel_metric">
+              <dt>Population</dt>
+              <dd>{tooltip ? numberFormat.format(tooltip.population) : '—'}</dd>
+            </div>
+          </dl>
+
+          {#if tooltip?.entries.length}
             <div class="awardee-panel_content">
               {#each tooltip.entries as entry (entry.key)}
                 <article class="awardee-panel_entry">
@@ -659,16 +1051,20 @@ $: legendBottomColor = selectedCategory
                 </article>
               {/each}
             </div>
+          {:else if tooltip}
+            <p class="awardee-panel_placeholder">
+              No project descriptions are available for this community yet.
+            </p>
           {:else}
             <p class="awardee-panel_placeholder">
-              Hover over a community name in the word cloud to preview each project year and description here, or click one to keep it selected.
+              Hover over a community bar to preview its funding stats and project list here, or click one to keep it selected.
             </p>
           {/if}
         </section>
       {/if}
     </div>
 
-    <div class="cloud-shell" class:cloud-shell--detail={selectedCategory}>
+    <div class="cloud-shell cloud-shell--with-legend-slot">
       <div class="cloud-frame" bind:this={container}>
         {#if loading}
           <div class="state-message">Loading CSV…</div>
@@ -676,61 +1072,161 @@ $: legendBottomColor = selectedCategory
           <div class="state-message error">
             Could not load <code>{resolvedCsvUrl}</code>: {error}
           </div>
-        {:else if displayWords.length === 0}
+        {:else if visualItemCount === 0}
           <div class="state-message">No rows matched the current view.</div>
         {:else}
           <svg
             width="100%"
             height={height}
             viewBox={`0 0 ${width} ${height}`}
-            aria-label={selectedCategory ? `${selectedCategory} awardees word cloud` : 'Category word cloud'}
+            aria-label={selectedCategory ? `${selectedCategory} awardees funding per capita bar chart` : 'Category word cloud'}
           >
-            <rect class="cloud-canvas" width={width} height={height} rx="24" />
-            <g>
-              {#each positionedWords as word (word.text)}
-                <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                <g
-                  transform={`translate(${word.x + width / 2}, ${word.y + height / 2}) rotate(${word.rotate})`}
-                  data-word-kind={word.kind}
-                  tabindex={word.kind === 'category' || word.kind === 'awardee' ? 0 : undefined}
-                  role={word.kind === 'category' || word.kind === 'awardee' ? 'button' : undefined}
-                  aria-pressed={word.kind === 'awardee' ? pinnedAwardee?.text === word.text : undefined}
-                  aria-label={word.title}
-                  class:word-group={true}
-                  class:word-group--clickable={word.kind === 'category' || word.kind === 'awardee'}
-                  class:word-group--active={activeWordKey === word.text}
-                  class:word-group--dimmed={!selectedCategory && hoveredCategoryKey && hoveredCategoryKey !== word.text}
-                  on:click={() => handleWordClick(word)}
-                  on:keydown={(event) => handleKeydown(event, word)}
-                  on:mouseenter={() => handleWordEnter(word)}
-                  on:mouseleave={() => handleWordLeave(word)}
-                  on:focus={() => handleWordEnter(word)}
-                  on:blur={() => handleWordLeave(word)}
-                >
-                  {#if word.kind === 'category' || word.kind === 'awardee'}
-                    <title>{word.title}</title>
-                  {/if}
-                  <text
-                    text-anchor="middle"
-                    dominant-baseline="central"
-                    font-size={word.size}
-                    font-family={fontFamily}
-                    font-weight={word.kind === 'category' ? 700 : 600}
-                    fill={word.fill}
+            <rect class="cloud-canvas" width={width} height={height} rx="8" />
+            {#if selectedCategory}
+	              <g class="bar-chart" aria-hidden="true">
+	                {#each barTickValues as tick, index}
+	                  <g class="bar-chart_tick" transform={`translate(${getBarTickX(tick)}, 0)`}>
+	                    <line y1={chartGridTop} y2={chartGridBottom} />
+	                    <text y={chartAxisY} text-anchor={getBarTickAnchor(index)} dominant-baseline="middle">
+	                      {fundingPerCapitaFormat.format(tick)}
+	                    </text>
+	                  </g>
+	                {/each}
+	                <text
+	                  class="bar-chart_axis-label"
+	                  x={chartLeft + chartPlotWidth / 2}
+	                  y={chartAxisLabelY}
+	                  text-anchor="middle"
+	                  dominant-baseline="middle"
+	                >
+	                  Funding per capita
+	                </text>
+	                <text
+	                  class="bar-chart_value-label"
+	                  x={chartValueEndX}
+	                  y={chartAxisLabelY}
+	                  text-anchor="end"
+	                  dominant-baseline="middle"
+	                >
+	                  Per capita
+	                </text>
+              </g>
+
+              <g>
+                {#each awardeeBars as bar, index (bar.text)}
+                  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                  <g
+                    data-word-kind={bar.kind}
+                    tabindex="0"
+                    role="button"
+                    aria-pressed={pinnedAwardee?.text === bar.text}
+                    aria-label={bar.title}
+                    class:bar-row={true}
+                    class:bar-row--active={activeWordKey === bar.text}
+                    on:click={() => handleWordClick(bar)}
+                    on:keydown={(event) => handleKeydown(event, bar)}
+                    on:mouseenter={() => handleWordEnter(bar)}
+                    on:mouseleave={() => handleWordLeave(bar)}
+                    on:focus={() => handleWordEnter(bar)}
+                    on:blur={() => handleWordLeave(bar)}
                   >
-                    {word.text}
-                  </text>
-                </g>
-              {/each}
-            </g>
+                    <rect
+                      class="bar-row_hit-area"
+                      x="0"
+                      y={getBarHitY(index)}
+                      width={width}
+                      height={barRowHeight}
+                    />
+                    <text
+                      class="bar-row_label"
+                      x={chartLeft - 14}
+                      y={getBarCenterY(index)}
+                      text-anchor="end"
+                      dominant-baseline="central"
+                    >
+                      {bar.awardee}
+                    </text>
+                    <rect
+                      class="bar-row_track"
+                      x={chartLeft}
+                      y={getBarY(index)}
+                      width={chartPlotWidth}
+                      height={barThickness}
+                      rx="5"
+                    />
+                    <rect
+                      class="bar-row_bar"
+                      x={chartLeft}
+                      y={getBarY(index)}
+                      width={getBarWidth(bar.fundingPerCapita)}
+                      height={barThickness}
+                      rx="5"
+                      fill={bar.fill}
+                    />
+                    <text
+                      class="bar-row_value"
+                      x={chartValueEndX}
+                      y={getBarCenterY(index)}
+                      text-anchor="end"
+                      dominant-baseline="central"
+                    >
+                      {fundingPerCapitaFormat.format(bar.fundingPerCapita)}
+                    </text>
+                  </g>
+                {/each}
+              </g>
+            {:else}
+              <g>
+                {#each positionedWords as word (word.text)}
+                  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                  <g
+                    transform={`translate(${word.x}, ${word.y}) rotate(${word.rotate})`}
+                    data-word-kind={word.kind}
+                    tabindex={word.kind === 'category' || word.kind === 'awardee' ? 0 : undefined}
+                    role={word.kind === 'category' || word.kind === 'awardee' ? 'button' : undefined}
+                    aria-pressed={word.kind === 'awardee' ? pinnedAwardee?.text === word.text : undefined}
+                    aria-label={word.title}
+                    class:word-group={true}
+                    class:word-group--clickable={word.kind === 'category' || word.kind === 'awardee'}
+                    class:word-group--active={activeWordKey === word.text}
+                    class:word-group--dimmed={!selectedCategory && hoveredCategoryKey && hoveredCategoryKey !== word.text}
+                    on:click={() => handleWordClick(word)}
+                    on:keydown={(event) => handleKeydown(event, word)}
+                    on:mouseenter={() => handleWordEnter(word)}
+                    on:mouseleave={() => handleWordLeave(word)}
+                    on:focus={() => handleWordEnter(word)}
+                    on:blur={() => handleWordLeave(word)}
+                  >
+                    {#if word.kind === 'category' || word.kind === 'awardee'}
+                      <title>{word.title}</title>
+                    {/if}
+                    <text
+                      text-anchor="middle"
+                      dominant-baseline="central"
+                      font-size={word.size}
+                      font-family={fontFamily}
+                      font-weight={word.kind === 'category' ? 700 : 600}
+                      fill={word.fill}
+                    >
+                      {word.text}
+                    </text>
+                  </g>
+                {/each}
+              </g>
+            {/if}
           </svg>
 
         {/if}
       </div>
 
-      {#if selectedCategory}
-        <div class="legend legend--side">
-          <p class="legend_title">Funding intensity</p>
+      <div
+        class="legend legend--side"
+        class:legend--placeholder={!selectedCategory}
+        aria-hidden={!selectedCategory}
+      >
+        {#if selectedCategory}
+          <p class="legend_title">Per capita funds</p>
+          <p class="legend_mode">{SCALE_MODE_LABELS[scaleMode]}</p>
 
           <div class="legend_side-label legend_side-label--top">
             <span>Highest per capita</span>
@@ -747,8 +1243,8 @@ $: legendBottomColor = selectedCategory
             <span>Lowest per capita</span>
             <span>{fundingPerCapitaFormat.format(legendMinFundingPerCapita)}</span>
           </div>
-        </div>
-      {/if}
+        {/if}
+      </div>
     </div>
   </div>
 </section>
@@ -759,68 +1255,131 @@ $: legendBottomColor = selectedCategory
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
+  .measurement-svg {
+    position: fixed;
+    top: -10000px;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: visible;
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .panel {
     display: grid;
     gap: clamp(1rem, 2vw, 1.5rem);
+    width: 100%;
   }
 
   .panel_layout {
     display: grid;
-    gap: clamp(1.5rem, 3vw, 2.75rem);
+    gap: clamp(1rem, 3vw, 2.25rem);
     align-items: start;
   }
 
   .panel_meta {
     display: grid;
-    gap: 1.1rem;
+    gap: 1rem;
     align-content: start;
+    align-self: start;
+    min-width: 0;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.82) 100%);
+    padding: 1.1rem;
   }
 
   .panel_header {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    gap: 0.85rem;
-    width: min(100%, var(--content-width, 72ch));
-    margin: 0 auto;
-    text-align: center;
+    justify-items: start;
+    gap: 0.7rem;
+    width: 100%;
+    margin: 0;
+    text-align: left;
   }
 
   .panel_title {
     margin: 0;
-    /* font-family: 'DotFont', sans-serif; */
-   
-    /* font-size: clamp(2.5rem, 7vw, 3.75rem); */
-    font-size: 2rem;
-    line-height: 0.92;
-    letter-spacing: 0.06em;
-    text-align: center;
+    font-size: 1rem;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-align: left;
+    text-transform: uppercase;
     color: rgb(59, 59, 59);
     text-wrap: balance;
   }
 
   .panel_title--detail {
-    /* font-size: clamp(2.1rem, 5vw, 3.3rem); */
-    font-size:2rem;
-    line-height: 0.98;
-    letter-spacing: 0.05em;
+    font-size: 1.35rem;
+    line-height: 1.14;
+    letter-spacing: 0;
     text-transform: uppercase;
   }
 
   .panel_summary {
     margin: 0;
     width: 100%;
-    font-size: clamp(1.05rem, 2vw, 1.35rem);
-    line-height: 1.6;
+    font-size: 0.98rem;
+    line-height: 1.55;
     text-align: left;
-    color: rgb(59, 59, 59);
+    color: #475569;
   }
 
   .panel_controls {
     display: grid;
     gap: 1rem;
-    width: min(100%, var(--content-width, 72ch));
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
+  }
+
+  .scale-toggle {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .scale-toggle_label {
+    margin: 0;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .scale-toggle_controls {
+    display: inline-grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+    padding: 0.3rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.34);
+    background: rgba(248, 250, 252, 0.88);
+  }
+
+  .scale-toggle_button {
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #475569;
+    padding: 0.46rem 0.8rem;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .scale-toggle_button--active {
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  }
+
+  .scale-toggle_button:focus-visible {
+    outline: 2px solid rgba(15, 23, 42, 0.42);
+    outline-offset: 2px;
   }
 
   .cloud-shell {
@@ -829,30 +1388,35 @@ $: legendBottomColor = selectedCategory
     align-items: start;
   }
 
-  .cloud-shell--detail {
+  .cloud-shell--with-legend-slot {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: clamp(0.75rem, 2vw, 1.25rem);
-    align-items: center;
+    align-items: start;
   }
 
   .cloud-frame {
     min-width: 0;
-    min-height: 420px;
-    border-radius: 24px;
-    border: 2px solid rgba(148, 163, 184, 0.32);
-    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.34);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07);
     overflow: hidden;
+    padding: clamp(1rem, 2vw, 1.45rem);
   }
 
   svg {
     display: block;
   }
 
+  .cloud-frame > svg {
+    width: 100%;
+    height: auto;
+  }
+
   .cloud-canvas {
-    fill: rgba(255, 255, 255, 0.96);
-    stroke: rgba(148, 163, 184, 0.18);
-    stroke-width: 2;
+    fill: rgba(255, 255, 255, 0.82);
+    stroke: rgba(148, 163, 184, 0.2);
+    stroke-width: 1;
   }
 
   .word-group {
@@ -880,42 +1444,187 @@ $: legendBottomColor = selectedCategory
 
   .word-group--active text,
   .word-group--clickable:hover text,
-  .word-group--clickable:focus text {
+  .word-group--clickable:focus-visible text {
     paint-order: stroke fill;
-    stroke: rgba(15, 23, 42, 0.16);
-    stroke-width: 5px;
+    stroke: rgba(255, 255, 255, 0.92);
+    stroke-width: 4px;
     stroke-linejoin: round;
-    filter: drop-shadow(0 0 0.55rem rgba(255, 255, 255, 0.95));
+    filter: drop-shadow(0 0.35rem 0.55rem rgba(15, 23, 42, 0.16));
+  }
+
+  .bar-chart_tick line {
+    stroke: rgba(148, 163, 184, 0.32);
+    stroke-width: 1;
+  }
+
+  .bar-chart_tick text,
+  .bar-chart_axis-label,
+  .bar-chart_value-label,
+  .bar-row_label,
+  .bar-row_value {
+    font-family: inherit;
+    letter-spacing: 0;
+    user-select: none;
+  }
+
+  .bar-chart_tick text {
+    fill: #64748b;
+    font-size: 0.76rem;
+  }
+
+  .bar-chart_axis-label {
+    fill: #475569;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .bar-chart_value-label {
+    fill: #64748b;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .bar-row {
+    cursor: pointer;
+  }
+
+  .bar-row:focus {
+    outline: none;
+  }
+
+  .bar-row_hit-area {
+    fill: transparent;
+  }
+
+  .bar-row_track {
+    fill: rgba(226, 232, 240, 0.7);
+    stroke: rgba(148, 163, 184, 0.22);
+    stroke-width: 1;
+  }
+
+  .bar-row_bar {
+    transition: filter 160ms ease, stroke 160ms ease, stroke-width 160ms ease;
+  }
+
+  .bar-row_label {
+    fill: #334155;
+    font-size: 0.94rem;
+    font-weight: 700;
+  }
+
+  .bar-row_value {
+    fill: #273449;
+    font-size: 0.9rem;
+    font-weight: 800;
+    paint-order: stroke fill;
+    stroke: rgba(255, 255, 255, 0.94);
+    stroke-linejoin: round;
+    stroke-width: 4px;
+  }
+
+  .bar-row--active .bar-row_label,
+  .bar-row:hover .bar-row_label,
+  .bar-row:focus-visible .bar-row_label {
+    fill: #0f172a;
+  }
+
+  .bar-row--active .bar-row_bar,
+  .bar-row:hover .bar-row_bar,
+  .bar-row:focus-visible .bar-row_bar {
+    paint-order: stroke fill;
+    stroke: rgba(255, 255, 255, 0.92);
+    stroke-width: 2px;
+    filter: drop-shadow(0 0.35rem 0.55rem rgba(15, 23, 42, 0.16));
+  }
+
+  .bar-row:focus-visible .bar-row_track {
+    stroke: rgba(15, 23, 42, 0.38);
+    stroke-width: 2;
   }
 
   .awardee-panel {
-    width: min(100%, var(--content-width, 72ch));
-    margin: 0 auto;
-    border-radius: 18px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-top: 4px solid var(--tooltip-accent);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, #f8fbff 100%);
-    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
-    padding: 1rem;
-    height: clamp(14rem, 30vw, 18rem);
+    width: 100%;
+    margin: 0;
+    border-top: 3px solid var(--tooltip-accent);
+    padding: 1rem 0 0;
+    height: clamp(19rem, 46vh, 25rem);
     display: grid;
     align-content: start;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+  }
+
+  .awardee-panel_header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
 
   .awardee-panel_eyebrow {
-    margin: 0 0 0.6rem;
+    margin: 0;
     font-size: 0.82rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
     text-transform: uppercase;
     color: #64748b;
   }
 
+  .awardee-panel_scale {
+    margin: 0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.16);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #475569;
+    white-space: nowrap;
+  }
+
   .awardee-panel_title {
-    margin: 0 0 0.8rem;
-    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    margin: 0.7rem 0 0.85rem;
+    font-size: 1.15rem;
     line-height: 1.1;
+    color: #0f172a;
+  }
+
+  .awardee-panel_metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: 0.55rem;
+    margin: 0 0 0.85rem;
+  }
+
+  .awardee-panel_metric {
+    display: grid;
+    gap: 0.28rem;
+    margin: 0;
+    padding: 0.7rem 0.75rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    background: rgba(248, 250, 252, 0.88);
+  }
+
+  .awardee-panel_metric dt,
+  .awardee-panel_metric dd {
+    margin: 0;
+  }
+
+  .awardee-panel_metric dt {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .awardee-panel_metric dd {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.2;
     color: #0f172a;
   }
 
@@ -948,7 +1657,7 @@ $: legendBottomColor = selectedCategory
   .awardee-panel_year {
     font-size: 0.84rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
     text-transform: uppercase;
     color: var(--tooltip-accent);
   }
@@ -965,7 +1674,7 @@ $: legendBottomColor = selectedCategory
   }
 
   .back-button {
-    justify-self: center;
+    justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: 0.65rem;
@@ -973,8 +1682,9 @@ $: legendBottomColor = selectedCategory
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     color: rgb(59, 59, 59);
     border-radius: 999px;
-    padding: 0.8rem 1.15rem;
+    padding: 0.68rem 0.95rem;
     font: inherit;
+    font-size: 0.92rem;
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
@@ -996,7 +1706,7 @@ $: legendBottomColor = selectedCategory
   .state-message {
     display: grid;
     place-items: center;
-    min-height: inherit;
+    min-height: 28rem;
     background: transparent;
     color: #334155;
     text-align: center;
@@ -1018,7 +1728,7 @@ $: legendBottomColor = selectedCategory
     gap: 0.55rem;
     width: 100%;
     padding: 1rem 1rem 0.95rem;
-    border-radius: 20px;
+    border-radius: 8px;
     border: 1px solid rgba(148, 163, 184, 0.26);
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
@@ -1035,17 +1745,32 @@ $: legendBottomColor = selectedCategory
     text-align: right;
   }
 
+  .legend--placeholder {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   .legend_title {
     margin: 0;
     font-size: 0.82rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
     text-transform: uppercase;
     color: #475569;
   }
 
   .legend--side .legend_title {
     width: 100%;
+  }
+
+  .legend_mode {
+    width: 100%;
+    margin: -0.15rem 0 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #64748b;
   }
 
   .legend_bar {
@@ -1077,44 +1802,40 @@ $: legendBottomColor = selectedCategory
 
   @media (min-width: 900px) {
     .panel_layout {
-      grid-template-columns: minmax(19rem, 28rem) minmax(0, 1fr);
+      grid-template-columns: minmax(13.5rem, 17.5rem) minmax(0, 1fr);
+      gap: clamp(1.4rem, 3vw, 2.4rem);
     }
 
     .panel_layout--detail {
-      align-items: stretch;
-    }
-
-    .panel_header,
-    .panel_controls {
-      width: 100%;
-      margin: 0;
-    }
-
-    .panel_header {
-      justify-items: start;
-      text-align: left;
-    }
-
-    .panel_title,
-    .panel_summary {
-      text-align: left;
-    }
-
-    .panel_controls {
-      justify-items: start;
+      align-items: start;
     }
 
     .panel_meta--detail {
       width: 100%;
-      min-height: 100%;
       grid-template-rows: auto auto minmax(0, 1fr);
     }
 
     .awardee-panel {
-      margin: auto 0 0;
+      margin: 0;
     }
 
     .back-button {
+      justify-self: start;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .cloud-shell--with-legend-slot {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .legend--side {
+      width: 100%;
+      justify-items: start;
+      text-align: left;
+    }
+
+    .legend_bar--vertical {
       justify-self: start;
     }
   }

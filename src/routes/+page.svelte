@@ -131,20 +131,6 @@
         color: rgb(59, 59, 59);
     }
 
-    .tod-figure {
-        width: min(100%, var(--content-width));
-        margin: 0 auto;
-    }
-
-    .tod-figure img {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        margin: 0 auto;
-        border-radius: 16px;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
-    }
     .placeholder {
         color:brown;
     }
