@@ -62,7 +62,7 @@
 
     <p class="placeholder">** introduce the MBTA Communities Act briefly **</p>
     <p>
-        The word cloud below offers a quick visual overview of how MAPC communities are advancing transit-oriented
+        The word cloud below offers a quick visual overview of how MBTA communities are advancing transit-oriented
         development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; selecting one reveals the awardees (communities) behind it, where larger and darker names indicate higher
         funding per capita. It is intended to make patterns in local TOD investment easier to scan at a glance
         before digging into the details.
