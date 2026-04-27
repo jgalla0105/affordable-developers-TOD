@@ -19,26 +19,17 @@
     <h4>{tabs[activeTab].heading}</h4>
 
     <div class="map-wrapper">
-      {#if activeTab === 0}
+      {#key activeTab}
         <ChoroplethMap
-          styleUrl="mapbox://styles/jgalla0611/cmoenjnxr000p01sa0m670jim"
-          valueProperty="MULTI%"
-          townNameProperty="NAME"
-          criteriaName="Multifamily Housing"
-          valueLabel="% Multifamily"
-          unit="%"
-          legendBins={[
-            { label: "0 – 5%",   color: "#f7fbff" },
-            { label: "5 – 20%",  color: "#deebf7" },
-            { label: "20 – 35%", color: "#6baed6" },
-            { label: "35 – 55%", color: "#2171b5" },
-            { label: "55 – 73%", color: "#08519c" },
-            { label: "73%+",     color: "#08306b" },
-          ]}
+          styleUrl={tabs[activeTab].styleUrl}
+          valueProperty={tabs[activeTab].valueProperty}
+          townNameProperty={tabs[activeTab].townNameProperty}
+          criteriaName={tabs[activeTab].criteriaName}
+          valueLabel={tabs[activeTab].valueLabel}
+          unit={tabs[activeTab].unit}
+          legendBins={tabs[activeTab].legendBins}
         />
-      {:else}
-        <p><b>Choropleth Map coming soon for this tab.</b></p>
-      {/if}
+      {/key}
     </div>
 
   <p class="justification">{tabs[activeTab].justification}</p>
