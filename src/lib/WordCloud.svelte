@@ -124,13 +124,15 @@
   }
 
   function buildPalette(count) {
-    const basePalette = ['#00843D', '#7C878E', '#ED8B00', '#FFC72C', '#DA291C', '#80276C', '#003DA5'];
+    console.log(categories);
+    const basePalette = ['#DA291C', '#003DA5', '#00843D', '#003DA5', '#000000', '#003DA5', '#003DA5'];
 
     return Array.from({ length: count }, (_, index) => basePalette[index % basePalette.length]);
   }
 
   $: categories = Array.from(new Set(rows.map((row) => row.category))).sort(ascending);
   $: categoryColor = scaleOrdinal().domain(categories).range(buildPalette(categories.length));
+  
 
   $: selectedRows = selectedCategory
     ? rows.filter((row) => row.category === selectedCategory)
@@ -144,7 +146,7 @@
 
   $: summaryText = selectedCategory
     ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". ${scaleModeDescription} Hover or click a community to review its funding metrics and projects here.`
-    : 'Start with the overview to compare which TOD project categories appear most often across the dataset. Select a category to reveal the awardees spending on it.';
+    : 'Select a category to reveal the awardees spending on it.';
 
   function createFontScale(values, minFont, maxFont) {
     const [minValue, maxValue] = extent(values);

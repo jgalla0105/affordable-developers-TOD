@@ -2,36 +2,35 @@
     {
         "heading": "Percentage of Multifamily Housing",
         "url": "placeholder url",
-        "justification": "Multifamily housing refers to residential properties that contain multiple separate housing units, allowing more than one family to live independently within the same building or complex. Multifamily housing can offer more affordable living options compared to single-family homes."
+        "justification": "Multifamily housing refers to residential properties that contain multiple separate housing units, allowing more than one family to live independently within the same building or complex. TOD prioritizes building multifamily housing near transit hubs to increase affordability. Developers must focus on building in areas with lower quantities of multi-family housing to support TOD."
     },
 
     {
         "heading": "Percentage of Mixed-use Development",
         "url": "placeholder2",
-        "justification": "Mixed-use development entertains multiple land purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land. To provide walking and micro-mobility proximity to multiple types of facilities, TOD prioritizes this type of development."
-    },
+        "justification": "Mixed-use development entertains multiple use purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land. TOD prioritizes building in areas with lower percentages of mixed-use development, to let micro-mobility reach multiple types of facilities."    },
 
     {
         "heading": "Rent Burden",
         "url": "placeholder3",
-        "justification": "Determined by the U.S. Congress, rent burden includes individuals who dedicate 30% of their monthly income to household fees (i.e rent, electrical, water). Affordable housing for low-income and/or rent burdened persons near transit stations encourages accessibility for longer travel distances, another goal of TOD."
+        "justification": "Determined by the U.S. Congress, rent burden includes individuals who dedicate 30% of their monthly income to household fees (i.e rent, electrical, water). Affordable housing for low-income and/or rent burdened persons near transit stations encourages accessibility for longer travel distances. Communities with high rent burden signal a need for larger TOD investment."
     },
     
     {
             "heading": "Resistance to Climate Change",
             "url": "placeholder4",
-            "justification": "Impacted area of heat/flood by climate change by county subdivision. To encourage sustainable infrastructure in the fight against climate change, TOD builds resistance in vulnerable communities–those affected by air quality, irregular temperatures and natural disasters. Guaranteeing safety and accessibility is of utmost importance when moving within a walkshed."
+            "justification": "Established by the MAPC, measures an area's adaptability to lower air quality, hotter temperatures and natural disasters. To encourage sustainable infrastructure, TOD builds resistance in vulnerable communities. Guaranteeing safety and accessibility in areas of low adaptability to heat is important, especially for movement within a walkshed."
     },
 
     {
             "heading": "Disability",
             "url": "placeholder5",
-            "justification": "Transit oriented development prioritizes accessibility and mobility. In Massachusetts, all walking environments must provide full Americans with Disabilities Act (ADA)-compliant accessibility for all pedestrians with disabilities."
+            "justification": "Transit oriented development prioritizes accessibility and mobility. In Massachusetts, all walking environments must provide full Americans with Disabilities Act (ADA)-compliant accessibility for all pedestrians with disabilities. Communities with a higher percentage of disabled persons benefit from TOD policies that improve accessibility."
     },
 
     {
         "heading": "Parking Lot Area Nearby",
         "url": "placeholder6",
-        "justification": "Park and Ride is a transportation system where drivers park their vehicles near public transport hubs. This aims to reduce the number of private vehicles in urban areas by allowing people to park and ride."
+        "justification": "Park and Ride is a transit spot to provide vehicle parking near public transport hubs. This aims to reduce the number of private vehicles in urban areas, thus producing flow to public ridership. Commuter rail and transit stations with a low amount of parking facilities benefit from this TOD aim."
     }
 ]

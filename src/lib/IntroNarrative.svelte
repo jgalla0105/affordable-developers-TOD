@@ -17,7 +17,7 @@
             <section class="step">
                 <div class="step-content" style:border-left-color={i.color}>
                     <h3 style:color={i.color}>{i.title}</h3>
-                    <p>{i.story}</p>
+                    <p>{@html i.story}</p>
                 </div>
             </section>
         {/each}
@@ -48,6 +48,8 @@
         border-left-style: dotted;
         padding: 1.5rem 2rem;
         font-size: clamp(1.05rem, 2vw, 1.35rem);
+        line-height: 1.75;
+        color: rgb(59, 59, 59);
     }
 
     .section-detail {

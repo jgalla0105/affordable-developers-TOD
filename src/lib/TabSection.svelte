@@ -96,5 +96,9 @@
     position: relative;
     margin-bottom: 1.5rem;
   }
+
+  p, .content {
+    color: rgb(59, 59, 59);
+  }
 </style>
 
