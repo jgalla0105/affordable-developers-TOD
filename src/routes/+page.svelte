@@ -42,7 +42,7 @@
 </script>
 
 <main class="page">
-    <h1 class="section-heading">WHAT IS TRANSIT-ORIENTED DEVELOPMENT?</h1>
+    <h1 class="section-heading" style="margin-top:6rem; margin-bottom:2rem">TRANSIT-ORIENTED DEVELOPMENT IN MASSACHUSETTS</h1>
     <p>
        Transit-oriented development (TOD) is a planning approach that focuses housing, jobs, shops,
        and services around public transit stations so people can live in denser, mixed-use neighborhoods
@@ -54,7 +54,7 @@
         In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are as follows:  
    </p>
 
-   <h2 class="section-heading section-heading--subsection">MBTA TOD PRINCIPLES</h2>
+   <h2 class="section-heading section-heading--subsection" style="margin-top:2rem">MBTA TOD PRINCIPLES</h2>
     <IntroNarrative />
 
 
@@ -62,15 +62,14 @@
 
     <p class="placeholder">** introduce the MBTA Communities Act briefly **</p>
     <p>
-        The word cloud below offers a quick visual overview of how MBTA communities are advancing transit-oriented
-        development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; selecting one reveals the awardees (communities) behind it, where larger and darker names indicate higher
-        funding per capita. It is intended to make patterns in local TOD investment easier to scan at a glance
-        before digging into the details.
+        The word cloud below offers an overview of how MBTA communities are advancing transit-oriented
+        development. At the top level, larger words highlight the project categories that have the most communities investing funding in them; select a category to reveal the awardees (communities) spending on it, and learn more about what they're developing.
     </p>
     
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
 
-    <h2 class="section-heading section-heading--subsection">WHAT PLACES MIGHT BENEFIT MOST FROM TOD?</h2>
+    
+    <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">WHAT PLACES MIGHT BENEFIT MOST FROM TOD?</h2>
     <p class="placeholder"> <b> ** Click on a criterion to see how it was used in determining what communities might benefit from transit-oriented development. **</b></p>
     <TabSection/>
 
@@ -134,5 +133,7 @@
     .placeholder {
         color:brown;
     }
+
+    
 
 </style>
