@@ -69,7 +69,7 @@
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
 
     
-    <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">WHAT PLACES MIGHT BENEFIT MOST FROM TOD?</h2>
+    <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">WHAT COMMUNITIES MIGHT BENEFIT MOST FROM TOD?</h2>
     <TabSection/>
 
    
