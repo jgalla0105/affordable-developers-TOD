@@ -17,6 +17,7 @@
 
 <div class="content">
     <h4>{tabs[activeTab].heading}</h4>
+    <p class="justification">{tabs[activeTab].justification}</p>
 
     <div class="map-wrapper">
       {#key activeTab}
@@ -32,7 +33,7 @@
       {/key}
     </div>
 
-  <p class="justification">{tabs[activeTab].justification}</p>
+  
 </div>
 
 
@@ -57,8 +58,9 @@
     border-radius: 999px;
     padding: 0.8rem 1.15rem;
     font: inherit;
+    font-size:15px;
     font-weight: 700;
-    cursor: pointer;
+    cursor:pointer;
     box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
     transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
   }
