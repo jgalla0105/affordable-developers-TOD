@@ -1,36 +1,104 @@
 [
-    {
-        "heading": "Multifamily Housing",
-        "url": "placeholder url",
-        "justification": "Multifamily housing refers to residential properties that contain multiple separate housing units, allowing more than one family to live independently within the same building or complex. TOD prioritizes building multifamily housing near transit hubs to increase affordability. Developers must focus on building in areas with lower quantities of multi-family housing to support TOD."
-    },
-
-    {
-        "heading": "Mixed-use Development",
-        "url": "placeholder2",
-        "justification": "Mixed-use development entertains multiple use purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land. TOD prioritizes building in areas with lower percentages of mixed-use development, to let micro-mobility reach multiple types of facilities."    },
-
-    {
-        "heading": "Rent Burden",
-        "url": "placeholder3",
-        "justification": "Determined by the U.S. Congress, rent burden includes individuals who dedicate 30% of their monthly income to household fees (i.e rent, electrical, water). Affordable housing for low-income and/or rent burdened persons near transit stations encourages accessibility for longer travel distances. Communities with high rent burden signal a need for larger TOD investment."
-    },
-    
-    {
-            "heading": "Resistance to Climate Change",
-            "url": "placeholder4",
-            "justification": "Established by the MAPC, measures an area's adaptability to lower air quality, hotter temperatures and natural disasters. To encourage sustainable infrastructure, TOD builds resistance in vulnerable communities. Guaranteeing safety and accessibility in areas of low adaptability to heat is important, especially for movement within a walkshed."
-    },
-
-    {
-            "heading": "Disability",
-            "url": "placeholder5",
-            "justification": "Transit oriented development prioritizes accessibility and mobility. In Massachusetts, all walking environments must provide full Americans with Disabilities Act (ADA)-compliant accessibility for all pedestrians with disabilities. Communities with a higher percentage of disabled persons benefit from TOD policies that improve accessibility."
-    },
-
-    {
-        "heading": "Parking Lot Area Nearby",
-        "url": "placeholder6",
-        "justification": "Park and Ride is a transit spot to provide vehicle parking near public transport hubs. This aims to reduce the number of private vehicles in urban areas, thus producing flow to public ridership. Commuter rail and transit stations with a low amount of parking facilities benefit from this TOD aim."
-    }
+  {
+    "heading": "Percentage of Multifamily Housing",
+    "justification": "Multifamily housing refers to residential properties that contain multiple separate housing units, allowing more than one family to live independently within the same building or complex. TOD prioritizes building multifamily housing near transit hubs to increase affordability. Developers must focus on building in areas with lower quantities of multi-family housing to support TOD.",
+    "styleUrl": "mapbox://styles/jgalla0611/cmoenjnxr000p01sa0m670jim",
+    "criteriaName": "Multifamily Housing",
+    "valueProperty": "MULTI%",
+    "townNameProperty": "NAME",
+    "valueLabel": "% Multifamily",
+    "unit": "%",
+    "legendBins": [
+      { "label": "0 – 5%", "color": "#E7F5ED" },
+      { "label": "5 – 15%", "color": "#A8DDBA" },
+      { "label": "15 – 30%", "color": "#5AAE75" },
+      { "label": "30 – 70%", "color": "#238B45" },
+      { "label": "70%+", "color": "#00873C" }
+    ]
+  },
+  {
+    "heading": "Percentage of Mixed-use Development",
+    "justification": "Mixed-use development entertains multiple use purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land. TOD prioritizes building in areas with lower percentages of mixed-use development, to let micro-mobility reach multiple types of facilities.",
+    "styleUrl": "mapbox://styles/jgalla0611/cmohc3x6j002h01qqf8eiah5s",
+    "criteriaName": "Mixed-use Development",
+    "valueProperty": "MIXED%",
+    "townNameProperty": "NAME",
+    "valueLabel": "% Mixed-use",
+    "unit": "%",
+    "legendBins": [
+      { "label": "0 – 2.1%", "color": "#E7F5ED" },
+      { "label": "2.1 – 4.3%", "color": "#A8DDBA" },
+      { "label": "4.3 – 6.4%", "color": "#5AAE75" },
+      { "label": "6.4 – 8.5%", "color": "#238B45" },
+      { "label": "8.5%+", "color": "#00873C" }
+    ]
+  },
+  {
+    "heading": "Rent Burden",
+    "justification": "Determined by the U.S. Congress, rent burden includes individuals who dedicate 30% of their monthly income to household fees (i.e rent, electrical, water). Affordable housing for low-income and/or rent burdened persons near transit stations encourages accessibility for longer travel distances. Communities with high rent burden signal a need for larger TOD investment.",
+    "styleUrl": "mapbox://styles/jgalla0611/cmohcr1nh002i01qq279bftuu",
+    "criteriaName": "Rent Burden",
+    "valueProperty": "50_on_rent",
+    "townNameProperty": "NAME",
+    "valueLabel": "% Rent Burdened",
+    "unit": "%",
+    "legendBins": [
+      { "label": "0 – 15%", "color": "#FBE9E6" },
+      { "label": "15 – 25%", "color": "#F4B7AE" },
+      { "label": "25 – 35%", "color": "#E77F70" },
+      { "label": "35 – 52%", "color": "#D55243" },
+      { "label": "52%+", "color": "#C83C2D" }
+    ]
+  },
+  {
+    "heading": "Resistance to Climate Change",
+    "justification": "Established by the MAPC, measures an area's adaptability to lower air quality, hotter temperatures and natural disasters. To encourage sustainable infrastructure, TOD builds resistance in vulnerable communities. Guaranteeing safety and accessibility in areas of low adaptability to heat is important, especially for movement within a walkshed.",
+    "styleUrl": "mapbox://styles/jgalla0611/cmohcvwd1004e01sagg4p15xa",
+    "criteriaName": "Resistance to Climate Change",
+    "valueProperty": "ac_ht",
+    "townNameProperty": "NAME",
+    "valueLabel": "Climate Resistance",
+    "unit": "",
+    "legendBins": [
+      { "label": "0 – 0.12", "color": "#E8EEF9" },
+      { "label": "0.12 – 0.20", "color": "#B8C9EA" },
+      { "label": "0.20 – 0.30", "color": "#7FA0D7" },
+      { "label": "0.30 – 0.79", "color": "#3E6DB8" },
+      { "label": "0.79+", "color": "#1441A0" }
+    ]
+  },
+  {
+    "heading": "Disability",
+    "justification": "Transit oriented development prioritizes accessibility and mobility. In Massachusetts, all walking environments must provide full Americans with Disabilities Act (ADA)-compliant accessibility for all pedestrians with disabilities. Communities with a higher percentage of disabled persons benefit from TOD policies that improve accessibility.",
+    "styleUrl": "mapbox://styles/jgalla0611/cmohcu9jx000201s071nv2li9",
+    "criteriaName": "Disability",
+    "valueProperty": "disability_percentage",
+    "townNameProperty": "NAME",
+    "valueLabel": "% Disabled",
+    "unit": "%",
+    "legendBins": [
+      { "label": "4 – 8%", "color": "#E8EEF9" },
+      { "label": "8 – 10%", "color": "#B8C9EA" },
+      { "label": "10 – 13%", "color": "#7FA0D7" },
+      { "label": "13 – 21%", "color": "#3E6DB8" },
+      { "label": "21%+", "color": "#1441A0" }
+    ]
+  },
+  {
+    "heading": "Parking Lot Area Nearby",
+    "justification": "Park and Ride is a transit spot to provide vehicle parking near public transport hubs. This aims to reduce the number of private vehicles in urban areas, thus producing flow to public ridership. Commuter rail and transit stations with a low amount of parking facilities benefit from this TOD aim.",
+    "styleUrl": "mapbox://styles/jgalla0611/cmohd1e5v001101sacbtwd8pm",
+    "criteriaName": "Parking Lot Area Nearby",
+    "valueProperty": "num_parking_lots",
+    "townNameProperty": "NAME",
+    "valueLabel": "Parking Lots",
+    "unit": "",
+    "legendBins": [
+      { "label": "0", "color": "#FFF2DF" },
+      { "label": "1 – 3", "color": "#F8D19B" },
+      { "label": "3 – 10", "color": "#F1B061" },
+      { "label": "10 – 36", "color": "#E99B3E" },
+      { "label": "36+", "color": "#E19132" }
+    ]
+  }
 ]
