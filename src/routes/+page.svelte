@@ -63,7 +63,7 @@
     <p>Established in 2021, the MBTA Communities Act is a state-issued ordinance focused on building multi-family housing supply near mass transit services. Based on proximity to MBTA transit service, the Communities Act requires cities to possess a stated quantity of multi-family housing to provide additional funding to transit-oriented development projects. Failure to comply prevents access to certain areas of state funding. Learn more about the MBTA Communities and its different grants listed in Section 3A, <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank">here.</a></p>
     <p>
         The word cloud below offers an overview of how transit-oriented
-        development is being advanced in MBTA communities. At the top level, larger words highlight the project categories that have the most communities investing funding in them; select a category to reveal the awardees (communities) spending on it, and learn more about what they're developing.
+        development is being advanced in compliant MBTA communities. At the top level, larger words highlight the project categories that have the most communities investing funding in them; select a category to reveal the awardees (communities) spending on it, and learn more about what they're developing.
     </p>
     
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
