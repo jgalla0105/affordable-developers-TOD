@@ -41,7 +41,8 @@
     });
 </script>
 
-<main class="page">
+    <div class="intro">
+    <div class="section">
     <h1 class="section-heading" style="margin-top:6rem; margin-bottom:2rem">TRANSIT-ORIENTED DEVELOPMENT IN MASSACHUSETTS</h1>
     <p>
        Transit-oriented development (TOD) is a planning approach that focuses housing, jobs, shops,
@@ -56,8 +57,12 @@
 
    <h2 class="section-heading section-heading--subsection" style="margin-top:2rem">MBTA TOD PRINCIPLES</h2>
     <IntroNarrative />
+    <p class="placeholder"> transition to next section</p>
+   </div>
+   </div>
 
-
+   <div class="wordcloud">
+   <div class="section">
     <h2 class="section-heading section-heading--subsection">HOW IS STATE FUNDING CURRENTLY GOING TOWARDS THESE PRINCIPLES?</h2>
 
     <p>Established in 2021, the MBTA Communities Act is a state-issued ordinance focused on building multi-family housing supply near mass transit services. Based on proximity to MBTA transit service, the Communities Act requires cities to possess a stated quantity of multi-family housing to provide additional funding to transit-oriented development projects. Failure to comply prevents access to certain areas of state funding. Learn more about the MBTA Communities and its different grants listed in Section 3A, <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank">here.</a></p>
@@ -67,14 +72,19 @@
     </p>
     
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
-
+    <p class="placeholder"> transition to next section</p>
+    </div>
+    </div>
     
+    <div class="map">
+    <div class="section">
     <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">WHAT COMMUNITIES MIGHT BENEFIT MOST FROM TOD?</h2>
     <TabSection/>
+    </div>
+    </div>
 
    
 
-</main>
 
 
 <style>
@@ -87,11 +97,32 @@
     }
     :global(body) {
      background-color: #fcfbec; /* Replace with your desired color */
+     margin: 0;
     }
 
+    .intro {
+        background-color: rgb(255, 255, 255);
+        width: 100%;
+    }
+    .wordcloud {
+        background-color:#f5ebbd;
+    }
+    .map {
+        background-color:rgb(255, 255, 255);
+        height: 100vh;
+    }
     .placeholder {
         color: red;
         font-weight: bold;
+    }
+    .section {
+         --content-width: 72ch;
+        --section-gap: clamp(1.25rem, 3vw, 2rem);
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+        display: grid;
+        gap: var(--section-gap);
     }
     .page {
         --content-width: 72ch;
