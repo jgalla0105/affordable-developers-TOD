@@ -99,6 +99,10 @@
      background-color: #fcfbec; /* Replace with your desired color */
      margin: 0;
     }
+    :global(.scrolly) {
+    display: grid;
+    grid-template-columns: 1fr; /* collapse to single column */
+}
 
     .intro {
         background-color: rgb(255, 255, 255);
@@ -124,15 +128,7 @@
         display: grid;
         gap: var(--section-gap);
     }
-    .page {
-        --content-width: 72ch;
-        --section-gap: clamp(1.25rem, 3vw, 2rem);
-        max-width: 72rem;
-        margin: 0 auto;
-        padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
-        display: grid;
-        gap: var(--section-gap);
-    }
+    
 
     .section-heading {
         margin: 0;
