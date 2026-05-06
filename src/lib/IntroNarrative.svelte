@@ -43,7 +43,8 @@ h3 {
     width: 100%;
     margin: 0 auto;
      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        /* box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08); */
+        box-shadow: 0 18px 36px #e6e600;
         border-radius: 24px; 
 }
 
@@ -60,17 +61,18 @@ h3 {
 
 /* Each text step scrolls through the sticky viewport */
 .step {
-    min-height: 140vh;
+    min-height: 100vh;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 6vh 1rem 0;
+    /* padding: 6vh 1rem 0; */
     /* padding: 10vh 1rem 45vh; more breathing space before next section begins  */
     box-sizing: border-box;
 }
 
 .step-content {
-    width: min(760px, 100%);
+    /* width: min(760px, 100%); */
+    width: 125%;
     padding: 1.25rem 1.75rem;
     font-size: clamp(1.05rem, 2vw, 1.35rem);
     line-height: 1.75;
@@ -84,7 +86,7 @@ h3 {
 
 /* This is inside the already-sticky viz slot */
 .section-detail {
-    height: 100vh;
+    height: 90vh;
     display: flex;
     align-items: flex-end;
     justify-content: center;
