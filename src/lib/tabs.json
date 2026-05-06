@@ -1,7 +1,9 @@
 [
   {
     "heading": "Multifamily Housing",
-    "justification": "Multifamily housing refers to residential properties that contain multiple separate housing units, allowing more than one family to live independently within the same building or complex. TOD prioritizes building multifamily housing near transit hubs to increase affordability. Developers must focus on building in areas with lower quantities of multi-family housing to support TOD.",
+    "relation": "A TOD approach to <span style='color: rgb(0 132 61); font-weight: bold;'>density and mix of uses</span> prioritizes communities with <span style='font-weight:bold;'>less</span> multifamily housing.",
+    "principleColor": "rgb(0 132 61)",
+    "justification": "Multifamily housing refers to residential properties that contain multiple separate housing units, allowing more than one family to live independently within the same building or complex. TOD prioritizes building multifamily housing near transit hubs to increase affordability.",
     "styleUrl": "mapbox://styles/jgalla0611/cmoenjnxr000p01sa0m670jim",
     "criteriaName": "Multifamily Housing",
     "valueProperty": "MULTI%",
@@ -18,7 +20,9 @@
   },
   {
     "heading": "Mixed-use Development",
-    "justification": "Mixed-use development entertains multiple use purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land. TOD prioritizes building in areas with lower percentages of mixed-use development, to let micro-mobility reach multiple types of facilities.",
+    "relation": "A TOD approach to <span style='color: rgb(0 132 61); font-weight: bold;'>density and mix of uses</span> prioritizes communities with <span style='font-weight:bold;'>less</span> mixed-use development.",
+    "principleColor": "rgb(0 132 61)",
+    "justification": "Mixed-use development entertains multiple use purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land, aiming to let micro-mobility reach multiple types of facilities.",
     "styleUrl": "mapbox://styles/jgalla0611/cmohc3x6j002h01qqf8eiah5s",
     "criteriaName": "Mixed-use Development",
     "valueProperty": "MIXED%",
@@ -35,7 +39,9 @@
   },
   {
     "heading": "Rent Burden",
-    "justification": "Determined by the U.S. Congress, rent burden includes individuals who dedicate 30% of their monthly income to household fees (i.e rent, electrical, water). Affordable housing for low-income and/or rent burdened persons near transit stations encourages accessibility for longer travel distances. Communities with high rent burden signal a need for larger TOD investment.",
+    "principleColor": "rgb(218, 41, 28)",
+    "relation": "A TOD approach to <span style='color: rgb(218, 41, 28); font-weight: bold;'>equitable development</span> prioritizes communities with <span style='font-weight:bold;'>more</span> rent burden.",
+    "justification": "Determined by the U.S. Congress, rent burden includes individuals who dedicate 30% of their monthly income to household fees (i.e rent, electrical, water). Affordable housing for low-income and/or rent burdened persons near transit stations encourages accessibility for longer travel distances.",
     "styleUrl": "mapbox://styles/jgalla0611/cmohcr1nh002i01qq279bftuu",
     "criteriaName": "Rent Burden",
     "valueProperty": "50_on_rent",
@@ -52,7 +58,9 @@
   },
   {
     "heading": "Resistance to Climate Change",
-    "justification": "Established by the MAPC, measures an area's adaptability to lower air quality, hotter temperatures and natural disasters. To encourage sustainable infrastructure, TOD builds resistance in vulnerable communities. Guaranteeing safety and accessibility in areas of low adaptability to heat is important, especially for movement within a walkshed.",
+    "principleColor": "rgb(0, 61, 165)",
+    "relation":"A TOD approach to <span style='color: rgb(0, 61, 165); font-weight: bold;'>a great public realm</span> prioritizes communities with <span style='font-weight:bold;'>higher</span> resistance to climate change.",
+    "justification": "Established by the MAPC, measures an area's adaptability to lower air quality, hotter temperatures and natural disasters. Guaranteeing safety and accessibility in areas of low adaptability to heat is important, especially for movement within a walkshed.",
     "styleUrl": "mapbox://styles/jgalla0611/cmohcvwd1004e01sagg4p15xa",
     "criteriaName": "Resistance to Climate Change",
     "valueProperty": "ac_ht",
@@ -69,7 +77,9 @@
   },
   {
     "heading": "Disability",
-    "justification": "Transit oriented development prioritizes accessibility and mobility. In Massachusetts, all walking environments must provide full Americans with Disabilities Act (ADA)-compliant accessibility for all pedestrians with disabilities. Communities with a higher percentage of disabled persons benefit from TOD policies that improve accessibility.",
+    "principleColor": "rgb(0, 61, 165)",
+    "relation":"A TOD approach to <span style='color: rgb(0, 61, 165); font-weight: bold;'>a greater public realm</span> prioritizes communities with a <span style='font-weight:bold;'>higher percentage</span> of disabled persons.",
+    "justification": "Transit oriented development prioritizes accessibility and mobility. In Massachusetts, all walking environments must provide full Americans with Disabilities Act (ADA)-compliant accessibility for all pedestrians with disabilities.",
     "styleUrl": "mapbox://styles/jgalla0611/cmohcu9jx000201s071nv2li9",
     "criteriaName": "Disability",
     "valueProperty": "disability_percentage",
@@ -86,7 +96,9 @@
   },
   {
     "heading": "Parking Lot Area Nearby",
-    "justification": "Park and Ride is a transit spot to provide vehicle parking near public transport hubs. This aims to reduce the number of private vehicles in urban areas, thus producing flow to public ridership. Commuter rail and transit stations with a low amount of parking facilities benefit from this TOD aim.",
+    "principleColor": "rgb(237, 139, 0)",
+    "relation": "A TOD approach to <span style='color: rgb(237, 139, 0); font-weight: bold;'>parking</span> prioritizes transit stops with a <span style='font-weight:bold;'>low amount</span> of parking facilities.",
+    "justification": "Park and Ride is a transit spot to provide vehicle parking near public transport hubs. This aims to reduce the number of private vehicles in urban areas, thus producing flow to public ridership.",
     "styleUrl": "mapbox://styles/jgalla0611/cmohd1e5v001101sacbtwd8pm",
     "criteriaName": "Parking Lot Area Nearby",
     "valueProperty": "num_parking_lots",

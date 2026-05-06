@@ -34,6 +34,8 @@
       {/key}
     </div>
 
+    <p class="relation">{@html tabs[activeTab].relation}</p>
+
   
 </div>
 </div>
@@ -80,6 +82,17 @@
   .justification {
      border: 2px solid rgba(148, 163, 184, 0.32);
         background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        border-radius: 24px;
+      padding: 15px;
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+
+  }
+
+  .relation {
+    margin-top: 3rem;
+    border: 2px solid rgba(148, 163, 184, 0.32);
+        /* background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%); */
         box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
         border-radius: 24px;
       padding: 15px;
