@@ -81,8 +81,13 @@
     <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">WHAT COMMUNITIES MIGHT BENEFIT MOST FROM TOD?</h2>
     <TabSection/>
     </div>
-    </div>
+    
 
+    <hr  style="margin-top:10rem">
+        <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org/Metropolitan target=blank>Area Planning Commission (MAPC)</a></p>
+        <p class="refs" style="font-weight:bold">DATA SOURCES</p>
+        <p class="placeholder">**insert rest of referneces here**</p>
+    </div>
    
 
 
@@ -99,21 +104,29 @@
      background-color: #fcfbec; /* Replace with your desired color */
      margin: 0;
     }
-    :global(.scrolly) {
-    display: grid;
-    grid-template-columns: 1fr; /* collapse to single column */
-}
-
+    
+    hr {
+        width: 50%;
+        background-color:rgb(158, 158, 158);
+        height:1px;
+    }
+    .refs {
+        text-align: center;
+        font-style:italic;
+        color:rgb(158, 158, 158); 
+        font-size: 1rem;
+    }
     .intro {
         background-color: rgb(255, 255, 255);
         width: 100%;
+        
     }
     .wordcloud {
         background-color:#f5ebbd;
     }
     .map {
         background-color:rgb(255, 255, 255);
-        height: 100vh;
+        /* height: 100 vh; */
     }
     .placeholder {
         color: red;

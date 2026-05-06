@@ -2,14 +2,14 @@
     {
         "title": "A. Density and Mix of Uses",
         "image": "figures/principle1.jpg",
-        "story": "Transit-oriented development centers <strong>relatively dense, mixed-use development within walking distance of transit stations, </strong> tailored to the scale of its surrounding context. By concentrating homes, jobs, shops, offices, and destinations like schools or entertainment near transit, TOD supports all-day ridership, <strong>makes transit service more efficient, and reduces reliance on cars.</strong> This mix can occur within a single building, across nearby blocks, or across adjacent stations, while also making it easier for people to walk for daily needs and lowering vehicle miles traveled and greenhouse gas emissions.",
+        "story": "Transit-oriented development centers <strong>dense, mixed-use places within walking distance of transit,</strong> scaled to their surrounding context. By clustering homes, jobs, shops, schools, and entertainment near stations, TOD <strong>boosts ridership, improves transit efficiency, and reduces car reliance.</strong> This mix can happen in one building, across blocks, or around nearby stations.",
         "alt" : "Drawn image of a TOD neighbourhood with mixed use buildings highlighted",
         "color": "#00843D"
     }, 
     {
         "title": "B. Equitable Development",
         "image": "figures/principle2.jpg",
-        "story": "Equitable transit-oriented development combines <strong>transit access with affordable, mixed-income housing, stronger job access, and investments that support existing communities.</strong> It works toward these goals by encouraging affordable and workforce housing near transit to reduce displacement and give lower- and middle-income households access to opportunity-rich areas, while also lowering combined housing and transportation costs by <strong>reducing the need for car ownership and long commutes.</strong> Equitable TOD also improves access to jobs through <strong>transit-centered employment hubs and last-mile connections</strong> like shuttles, and it strengthens neighborhoods by supporting community services, local businesses, and partnerships with community organizations. At the same time, it <strong>promotes sustainable, resilient development</strong> through greener building standards and protections against climate risks such as flooding and sea level rise.",
+        "story": "Equitable transit-oriented development pairs <strong>transit access with affordable mixed-income housing, better job access, and community-focused investment.</strong> It helps reduce displacement, lower housing and transportation costs, and expand access to opportunity by <strong>reducing car dependence and long commutes.</strong> Equitable TOD also supports <strong>transit-centered job hubs and last-mile connections,</strong> while strengthening local businesses, services, and climate-resilient development.",
         "alt": "Drawn image of a TOD neighbourhood with affordable housing and public transportation highlighted",
         "color" : "#DA291C"
     }, 
