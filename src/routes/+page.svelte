@@ -50,12 +50,18 @@
        with less reliance on cars. By pairing zoning changes with walkable streets, bike access, and
        affordable housing, TOD aims to create more sustainable, connected, and equitable communities.
    </p>
+    
 
    <p>
-        In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are as follows:  
+        In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are: <span style="color: #00843D; font-weight: bold;">density and mix of uses</span>, <span style="color: #DA291C; font-weight: bold;">equitable development</span>, <span style="color: #003DA5; font-weight: bold;">a great public realm</span>, and <span style="color: #ED8B00; font-weight: bold;">a TOD approach to parking</span>.
    </p>
 
-   <h2 class="section-heading section-heading--subsection" style="margin-top:2rem">MBTA TOD PRINCIPLES</h2>
+   </div>
+    </div>
+
+    <div class="scrolly">
+    <div class="section">
+   <h2 class="section-heading section-heading--subsection" style="margin-top:2rem">MassDOT/MBTA TOD PRINCIPLES</h2>
     <IntroNarrative />
     <p class="placeholder"> transition to next section</p>
    </div>
@@ -103,6 +109,7 @@
     :global(body) {
      background-color: #fcfbec; /* Replace with your desired color */
      margin: 0;
+     font-family: 'Inter', sans-serif;
     }
     
     hr {
@@ -119,14 +126,20 @@
     .intro {
         background-color: rgb(255, 255, 255);
         width: 100%;
+        height: 100vh;
         
     }
+
+    .scrolly {
+        background-color: #fcfbec;
+    }
     .wordcloud {
-        background-color:#f5ebbd;
+        background-color:#ffffff;
+        /* height: 100vh; */
     }
     .map {
-        background-color:rgb(255, 255, 255);
-        /* height: 100 vh; */
+        background-color:#fcfbec;
+        /* height: 100vh; */
     }
     .placeholder {
         color: red;
@@ -157,7 +170,7 @@
     .section-heading--subsection {
         /* font-size: clamp(2.5rem, 7vw, 3.75rem); */
         font-size: 3rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 3rem;
         margin-top:3rem;
     }
 
