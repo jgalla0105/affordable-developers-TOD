@@ -11,7 +11,7 @@
     );
 </script>
 
-<div class="scrolly-wrapper">
+<div class="scrolly-wrapper" style="box-shadow: 0 18px 50px {intro[activeSectionIdx].color}">
     <Scrolly 
     bind:progress={scrollyProgress}
     --scrolly-layout="overlap"
@@ -44,9 +44,9 @@ h3 {
     margin: 0 auto;
      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
         /* box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08); */
-        box-shadow: 0 18px 36px #e6e600;
+        /* box-shadow: 0 18px 36px #e6e600; */
         border-radius: 24px; 
-}
+    }
 
 /* The internal svelte-scrolly layout needs to be controlled globally */
 .scrolly-wrapper :global(.story) {
