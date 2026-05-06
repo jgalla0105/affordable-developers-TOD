@@ -84,7 +84,7 @@
     
 
     <hr  style="margin-top:10rem">
-        <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org/Metropolitan target=blank>Area Planning Commission (MAPC)</a></p>
+        <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org target=blank>Metropolitan Area Planning Commission (MAPC)</a></p>
         <p class="refs" style="font-weight:bold">DATA SOURCES</p>
         <p class="placeholder">**insert rest of referneces here**</p>
     </div>
@@ -158,6 +158,7 @@
         /* font-size: clamp(2.5rem, 7vw, 3.75rem); */
         font-size: 3rem;
         margin-bottom: 1.5rem;
+        margin-top:3rem;
     }
 
     p {
