@@ -11,19 +11,24 @@
     );
 </script>
 
-<div class="scrolly-wrapper">
-    <Scrolly bind:progress={scrollyProgress}>
+<div class="scrolly-wrapper" style="box-shadow: 0 18px 50px {intro[activeSectionIdx].color}">
+    <Scrolly 
+    bind:progress={scrollyProgress}
+    --scrolly-layout="overlap"
+    --scrolly-gap="0"
+    --scrolly-viz-top="0px">
         {#each intro as i}
             <section class="step">
-                <div class="step-content" style:border-left-color={i.color}>
+                <div class="step-content">
                     <h3 style:color={i.color}>{i.title}</h3>
-                    <p>{i.story}</p>
+                    <p>{@html i.story}</p>
                 </div>
             </section>
         {/each}
 
         <svelte:fragment slot="viz">
             <div class="section-detail">
+                
                 <img src={intro[activeSectionIdx].image} alt={intro[activeSectionIdx].alt ?? intro[activeSectionIdx].title} />
             </div>
         </svelte:fragment>
@@ -31,41 +36,68 @@
 </div>
 
 <style>
+h3 {
+    text-align: center;
+}
     .scrolly-wrapper {
-        width: auto;
-        position: relative;
-        left: 45%;
-        transform: translateX(-50%);
+    width: 100%;
+    margin: 0 auto;
+     background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        /* box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08); */
+        /* box-shadow: 0 18px 36px #e6e600; */
+        border-radius: 24px; 
     }
 
-    .step {
-        min-height: 80vh;
-        padding: 2rem;
-    }
+/* The internal svelte-scrolly layout needs to be controlled globally */
+.scrolly-wrapper :global(.story) {
+    position: relative;
+    z-index: 2;
+}
 
-    .step-content {
-        border-left-width: 8px;
-        border-left-style: dotted;
-        padding: 1.5rem 2rem;
-        font-size: clamp(1.05rem, 2vw, 1.35rem);
-    }
+.scrolly-wrapper :global(.viz) {
+    z-index: 1;
+    height: 100vh;
+}
 
-    .section-detail {
-        padding: 2rem;
-        width: 100%;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;      /* vertical centering */
-        justify-content: center;  /* horizontal centering */
-    }
+/* Each text step scrolls through the sticky viewport */
+.step {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    /* padding: 6vh 1rem 0; */
+    /* padding: 10vh 1rem 45vh; more breathing space before next section begins  */
+    box-sizing: border-box;
+}
 
-    img {
-        max-width: 100%;
-        max-height: calc(100vh - 4rem);
-        object-fit: contain;
-        border: 2px solid rgba(148, 163, 184, 0.32);
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
-        border-radius: 24px;
-    }
+.step-content {
+    /* width: min(760px, 100%); */
+    width: 125%;
+    padding: 1.25rem 1.75rem;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    line-height: 1.75;
+    color: rgb(59, 59, 59);
+
+    /* optional, but useful if the text overlays the viz area */
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(8px);
+    border-radius: 18px;
+}
+
+/* This is inside the already-sticky viz slot */
+.section-detail {
+    height: 90vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    /* leaves the top part of the viewport for text */
+    padding: 32vh 2rem 6vh;
+    box-sizing: border-box;
+}
+
+img {
+    max-width: min(100%, 900px);
+    max-height: 60vh;
+    object-fit: contain;
+}
 </style>
