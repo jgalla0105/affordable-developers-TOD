@@ -5,7 +5,7 @@
     $: activeTab = 0;
 </script>
 
-<div class="wrapper">
+<div class="wrapper" style="box-shadow: 0 18px 36px {tabs[activeTab].principleColor};">
 <div class="tabs">
   {#each tabs as tab, i}
     <button
@@ -47,7 +47,7 @@
   .wrapper {
     padding: 3rem;
     background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-    box-shadow: 0 18px 36px #e6e600;
+    /* box-shadow: 0 18px 36px #e6e600; */
     border-radius: 24px; 
   }
   .active {
