@@ -35,6 +35,8 @@
 			style: styleUrl,
 			center: [-71.2, 42.3],
 			zoom: 8,
+			minZoom: 7,
+			maxZoom: 11,
 		});
 
 		map.addControl(new mapboxgl.NavigationControl(), "top-right");
