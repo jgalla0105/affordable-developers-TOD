@@ -160,18 +160,67 @@
     return scaleSqrt().domain([minValue, maxValue]).range([minFont, maxFont]);
   }
 
-  function saturateCategoryColor(category, fund, [minFunds, maxFunds]) {
-    const base = hsl(categoryColor(category) ?? '#64748b');
+  const PER_CAPITA_COLOR_STEPS = [
+    { limit: 0.2, saturation: 0.34, lightness: 0.72 },
+    { limit: 0.4, saturation: 0.48, lightness: 0.64 },
+    { limit: 0.6, saturation: 0.62, lightness: 0.56 },
+    { limit: 0.8, saturation: 0.76, lightness: 0.48 },
+    { limit: 1, saturation: 0.9, lightness: 0.4 }
+  ];
 
+  function getPerCapitaColorStep(value, [minFunds, maxFunds]) {
     if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds) || minFunds === maxFunds) {
-      return hsl(base.h, clamp(base.s + 0.18, 0.42, 0.88), clamp(base.l - 0.12, 0.36, 0.56)).formatHex();
+      return PER_CAPITA_COLOR_STEPS[Math.floor(PER_CAPITA_COLOR_STEPS.length / 2)];
     }
 
-    const t = clamp((fund - minFunds) / (maxFunds - minFunds), 0, 1);
-    const saturation = 0.32 + t * 0.58;
-    const lightness = 0.72 - t * 0.30;
+    const t = clamp((value - minFunds) / (maxFunds - minFunds), 0, 1);
 
-    return hsl(base.h, saturation, lightness).formatHex();
+    return PER_CAPITA_COLOR_STEPS.find((step) => t <= step.limit) ?? PER_CAPITA_COLOR_STEPS[PER_CAPITA_COLOR_STEPS.length - 1];
+  }
+
+  function saturateCategoryColor(category, fund, [minFunds, maxFunds]) {
+    const base = hsl(categoryColor(category) ?? '#64748b');
+    const step = getPerCapitaColorStep(fund, [minFunds, maxFunds]);
+
+    return hsl(base.h, step.saturation, step.lightness).formatHex();
+  }
+
+  function getPerCapitaStepColor(category, step) {
+    const base = hsl(categoryColor(category) ?? '#64748b');
+
+    return hsl(base.h, step.saturation, step.lightness).formatHex();
+  }
+
+  function buildDiscretePerCapitaLegendBins(category, [minFunds, maxFunds]) {
+    if (!category) {
+      return [];
+    }
+
+    if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds)) {
+      return [];
+    }
+
+    if (minFunds === maxFunds) {
+      const step = getPerCapitaColorStep(minFunds, [minFunds, maxFunds]);
+
+      return [{
+        label: fundingPerCapitaFormat.format(minFunds),
+        color: getPerCapitaStepColor(category, step)
+      }];
+    }
+
+    const range = maxFunds - minFunds;
+
+    return PER_CAPITA_COLOR_STEPS.map((step, index) => {
+      const lowerLimit = index === 0 ? 0 : PER_CAPITA_COLOR_STEPS[index - 1].limit;
+      const lowerValue = minFunds + range * lowerLimit;
+      const upperValue = minFunds + range * step.limit;
+
+      return {
+        label: `${fundingPerCapitaFormat.format(lowerValue)} - ${fundingPerCapitaFormat.format(upperValue)}`,
+        color: getPerCapitaStepColor(category, step)
+      };
+    }).reverse();
   }
 
   function getFundingPerCapita(funds, population) {
@@ -882,16 +931,9 @@ $: {
 }
 
 // Legend and bars use the same funding-per-capita metric as length and color.
-$: legendMinFundingPerCapita = activeFundingPerCapitaExtent[0] ?? 0;
-$: legendMaxFundingPerCapita = activeFundingPerCapitaExtent[1] ?? 0;
-
-$: legendTopColor = selectedCategory
-  ? saturateCategoryColor(selectedCategory, legendMaxFundingPerCapita, activeFundingPerCapitaExtent)
-  : null;
-
-$: legendBottomColor = selectedCategory
-  ? saturateCategoryColor(selectedCategory, legendMinFundingPerCapita, activeFundingPerCapitaExtent)
-  : null;
+$: legendBins = selectedCategory
+  ? buildDiscretePerCapitaLegendBins(selectedCategory, activeFundingPerCapitaExtent)
+  : [];
 
 $: chartTop = selectedCategory ? clamp(height * 0.18, 96, 126) : 0;
 $: chartInsetX = selectedCategory ? clamp(width * 0.035, 24, 50) : 0;
@@ -1228,20 +1270,13 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
           <p class="legend_title">Per capita funds</p>
           <p class="legend_mode">{SCALE_MODE_LABELS[scaleMode]}</p>
 
-          <div class="legend_side-label legend_side-label--top">
-            <span>Highest per capita</span>
-            <span>{fundingPerCapitaFormat.format(legendMaxFundingPerCapita)}</span>
-          </div>
-
-          <div
-            class="legend_bar legend_bar--vertical"
-            style={`background: linear-gradient(to bottom, ${legendTopColor}, ${legendBottomColor});`}
-            aria-label={`Funding per capita color scale for ${selectedCategory}`}
-          ></div>
-
-          <div class="legend_side-label legend_side-label--bottom">
-            <span>Lowest per capita</span>
-            <span>{fundingPerCapitaFormat.format(legendMinFundingPerCapita)}</span>
+          <div class="legend_bins" aria-label={`Funding per capita color bins for ${selectedCategory}`}>
+            {#each legendBins as bin}
+              <div class="legend_bin">
+                <span class="legend_bin-label">{bin.label}</span>
+                <span class="legend_bin-swatch" style:background-color={bin.color}></span>
+              </div>
+            {/each}
           </div>
         {/if}
       </div>
@@ -1735,7 +1770,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
   }
 
   .legend--side {
-    width: clamp(4.75rem, 10vw, 6rem);
+    width: clamp(9rem, 14vw, 11.5rem);
     padding: 0;
     border: 0;
     background: transparent;
@@ -1773,31 +1808,35 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     color: #64748b;
   }
 
-  .legend_bar {
-    height: 16px;
-    border-radius: 999px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-  }
-
-  .legend_bar--vertical {
-    width: 16px;
-    height: clamp(12rem, 34vw, 18rem);
-    justify-self: end;
-  }
-
-  .legend_side-label {
+  .legend_bins {
     display: grid;
-    gap: 0.18rem;
-    font-size: 0.9rem;
+    gap: 0.38rem;
+    width: 100%;
+    margin-top: 0.35rem;
+  }
+
+  .legend_bin {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1rem;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .legend_bin-label {
+    min-width: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.15;
     color: #475569;
+    white-space: normal;
   }
 
-  .legend_side-label--top {
-    align-self: end;
-  }
-
-  .legend_side-label--bottom {
-    align-self: start;
+  .legend_bin-swatch {
+    width: 1rem;
+    height: 1.25rem;
+    border-radius: 3px;
+    border: 1px solid rgba(15, 23, 42, 0.16);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
   }
 
   @media (min-width: 900px) {
@@ -1835,8 +1874,5 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
       text-align: left;
     }
 
-    .legend_bar--vertical {
-      justify-self: start;
-    }
   }
 </style>
