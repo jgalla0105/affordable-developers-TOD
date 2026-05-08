@@ -65,8 +65,8 @@
     "criteriaName": "Resistance to Climate Change",
     "valueProperty": "ac_ht",
     "townNameProperty": "NAME",
-    "valueLabel": "Climate Resistance",
-    "unit": "",
+    "valueLabel": "% of Buildings with Climate Resistance",
+    "unit": "%",
     "legendBins": [
       { "label": "0 – 0.12", "color": "#E8EEF9" },
       { "label": "0.12 – 0.20", "color": "#B8C9EA" },
@@ -102,7 +102,7 @@
     "styleUrl": "mapbox://styles/jgalla0611/cmohd1e5v001101sacbtwd8pm",
     "criteriaName": "Parking Lot Area Nearby",
     "valueProperty": "num_parking_lots",
-    "townNameProperty": "NAME",
+    "townNameProperty": "stop_name",
     "valueLabel": "Parking Lots",
     "unit": "",
     "legendBins": [
