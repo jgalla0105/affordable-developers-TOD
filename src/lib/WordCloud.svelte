@@ -125,7 +125,9 @@
 
   function buildPalette(count) {
     console.log(categories);
-    const basePalette = ['#DA291C', '#003DA5', '#00843D', '#003DA5', '#000000', '#003DA5', '#003DA5'];
+
+    // orange, blue, silver, blue, black, blue, blue
+    const basePalette = ['#ED8B00', '#003DA5', '#7C878E', '#003DA5', '#000000', '#003DA5', '#003DA5'];
 
     return Array.from({ length: count }, (_, index) => basePalette[index % basePalette.length]);
   }
