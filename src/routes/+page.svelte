@@ -53,7 +53,7 @@
     
 
    <p>
-        In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are: <span style="color: #00843D; font-weight: bold;">density and mix of uses</span>, <span style="color: #DA291C; font-weight: bold;">equitable development</span>, <span style="color: #003DA5; font-weight: bold;">a great public realm</span>, and <span style="color: #ED8B00; font-weight: bold;">a TOD approach to parking</span>.
+        In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are: <span style="color: #7C878E; font-weight: bold;">density and mix of uses</span>, <span style="color: #ED8B00; font-weight: bold;">equitable development</span>, <span style="color: #003DA5; font-weight: bold;">a great public realm</span>, and <span style="color: #80276C; font-weight: bold;">a TOD approach to parking</span>.
    </p>
 
    </div>
