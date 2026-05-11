@@ -26,32 +26,6 @@
     ]
   },
   {
-    "heading": "Mixed-use Development",
-    "relation": "A TOD approach to <span style='color: rgb(124 135 142); font-weight: bold;'>density and mix of uses</span> prioritizes communities with <span style='font-weight:bold;'>less</span> mixed-use development.",
-    "principleColor": "rgb(124 135 142)",
-    "justification": "Mixed-use development entertains multiple use purposes (commercial industries, residential properties, recreation, etc.) underneath a single parcel of land, aiming to let micro-mobility reach multiple types of facilities.",
-    "styleUrl": "mapbox://styles/jgalla0611/cmohc3x6j002h01qqf8eiah5s",
-    "criteriaName": "Mixed-use Development",
-    "valueProperty": "MIXED%",
-    "townNameProperty": "NAME",
-    "valueLabel": "% Mixed-use",
-    "unit": "%",
-    "legendBins": [
-      { "label": "0 – 2.1%", "color": "#F1F3F4" },
-      { "label": "2.1 – 4.3%", "color": "#D4D9DC" },
-      { "label": "4.3 – 6.4%", "color": "#AEB7BC" },
-      { "label": "6.4 – 8.5%", "color": "#909BA1" },
-      { "label": "8.5%+", "color": "#7C878E" }
-    ],
-    "colorStops": [
-      { "min": 0, "color": "#F1F3F4" },
-      { "min": 0.021, "color": "#D4D9DC" },
-      { "min": 0.043, "color": "#AEB7BC" },
-      { "min": 0.064, "color": "#909BA1" },
-      { "min": 0.085, "color": "#7C878E" }
-    ]
-  },
-  {
     "heading": "Rent Burden",
     "principleColor": "rgb(237 139 0)",
     "relation": "A TOD approach to <span style='color: rgb(237 139 0); font-weight: bold;'>equitable development</span> prioritizes communities with <span style='font-weight:bold;'>more</span> rent burden.",
