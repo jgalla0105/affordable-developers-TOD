@@ -944,6 +944,20 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     return 'middle';
   }
 
+  function createLegendBins(maxValue, accentColor) {
+    if (!Number.isFinite(maxValue) || maxValue <= 0) {
+      return [{ label: fundingPerCapitaFormat.format(0), color: accentColor }];
+    }
+
+    return [
+      { label: `${fundingPerCapitaFormat.format(0)} - ${fundingPerCapitaFormat.format(maxValue / 3)}`, color: '#D8E4F2' },
+      { label: `${fundingPerCapitaFormat.format(maxValue / 3)} - ${fundingPerCapitaFormat.format((maxValue * 2) / 3)}`, color: '#8EAACB' },
+      { label: `${fundingPerCapitaFormat.format((maxValue * 2) / 3)}+`, color: accentColor }
+    ];
+  }
+
+  $: legendBins = selectedCategory ? createLegendBins(maxBarValue, tooltipAccentColor) : [];
+
 </script>
 
 <svelte:window on:click={handleWindowClick} />
