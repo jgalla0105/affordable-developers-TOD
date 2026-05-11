@@ -205,7 +205,7 @@
 
 <!-- ── Info panel ─────────────────────────────────────────────────────────── -->
 <div class="info-panel">
-	<h3>{criteriaName}</h3>
+	<!-- <h3>{criteriaName}</h3> -->
 	{#if hoveredInfo}
 		<p><strong>{hoveredInfo.townName}</strong></p>
 		<p>
@@ -217,7 +217,7 @@
 			{/if}
 		</p>
 	{:else}
-		<p>Hover over a town!</p>
+		<p style="text-align:center;">Hover over a town!</p>
 	{/if}
 </div>
 
@@ -275,7 +275,8 @@
 		border-radius: 6px;
 		padding: 10px 14px;
 		font-size: 13px;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+		/* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+		box-shadow: 0 0 10px #e6e600;
 		min-width: 180px;
 		pointer-events: none;
 	}

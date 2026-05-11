@@ -6,11 +6,11 @@
 </script>
 
 <div class="wrapper" style="box-shadow: 0 18px 36px {tabs[activeTab].principleColor};">
-<div class="tabs">
+<div class="tabs" style="margin-left:30px;">
   {#each tabs as tab, i}
     <button
       class:active={activeTab === i}
-      on:click={() => activeTab = i}>
+      on:click={() => activeTab = i}  style="margin:10px;">
       {tab.heading}
     </button>
   {/each}
@@ -45,6 +45,9 @@
 
 
 <style>
+.tabs {
+  max-width: 100%;
+}
   .wrapper {
     padding: 3rem;
     background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
@@ -109,6 +112,7 @@
   .map-wrapper {
     position: relative;
     margin-bottom: 1.5rem;
+    max-width: 100vw;
   }
 
   p, .content {

@@ -139,15 +139,15 @@
     ? rows.filter((row) => row.category === selectedCategory)
     : [];
 
-  $: panelTitle = selectedCategory ? selectedCategory : 'TOD CATEGORIES';
+  $: panelTitle = selectedCategory ? selectedCategory : '';
   $: tooltipAccentColor = selectedCategory ? categoryColor(selectedCategory) ?? '#0ea5c6' : '#0ea5c6';
   $: scaleModeDescription = scaleMode === 'global'
     ? 'Bars use the same funding-per-capita scale across every category.'
     : 'Bars are scaled within this category for easier local comparison.';
 
   $: summaryText = selectedCategory
-    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". ${scaleModeDescription} Hover or click a community to review its funding metrics and projects here.`
-    : 'Select a category to reveal the awardees spending on it.';
+    ? `${scaleModeDescription}`
+    : 'Click on a category to reveal the awardees spending on it.';
 
   function createFontScale(values, minFont, maxFont) {
     const [minValue, maxValue] = extent(values);
@@ -994,12 +994,20 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
         </div>
       {/if}
 
-      <div class="panel_header">
-        <h2 class="panel_title" class:panel_title--detail={selectedCategory}>
-          {panelTitle}
-        </h2>
-        <p class="panel_summary">{summaryText}</p>
-      </div>
+      {#if selectedCategory}
+        <div class="panel_header">
+          <h2 class="panel_title" class:panel_title--detail={selectedCategory}>
+            {panelTitle}
+          </h2>
+          
+            <p class="panel_summary"> {summaryText}</p>
+          </div>
+            {:else}
+            <div class="instruction">
+            <p>{summaryText}</p>
+            </div>
+          
+      {/if}
 
       {#if selectedCategory}
         <section
@@ -1044,10 +1052,8 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
             <p class="awardee-panel_placeholder">
               No project descriptions are available for this community yet.
             </p>
-          {:else}
-            <p class="awardee-panel_placeholder">
-              Hover over a community bar to preview its funding stats and project list here, or click one to keep it selected.
-            </p>
+          
+            
           {/if}
         </section>
       {/if}
@@ -1158,6 +1164,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
                       y={getBarCenterY(index)}
                       text-anchor="end"
                       dominant-baseline="central"
+                      style="margin-left: 2px;"
                     >
                       {fundingPerCapitaFormat.format(bar.fundingPerCapita)}
                     </text>
@@ -1208,6 +1215,27 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
         {/if}
       </div>
 
+      <div
+        class="legend legend--side"
+        class:legend--placeholder={!selectedCategory}
+        aria-hidden={!selectedCategory}
+      >
+        {#if selectedCategory}
+        <div class="instruction"><strong>Hover</strong> over a community bar to preview its funding stats and project list, or <strong>click</strong> one to keep it selected.</div>
+          <p class="legend_title">Per capita funds</p>
+          <p class="legend_mode">{SCALE_MODE_LABELS[scaleMode]}</p>
+
+          <div class="legend_bins" aria-label={`Funding per capita color bins for ${selectedCategory}`}>
+            {#each legendBins as bin}
+              <div class="legend_bin">
+                <span class="legend_bin-label">{bin.label}</span>
+                <span class="legend_bin-swatch" style:background-color={bin.color}></span>
+              </div>
+            {/each}
+          </div>
+          
+        {/if}
+      </div>
     </div>
   </div>
 </section>
@@ -1232,13 +1260,14 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
   .panel {
     display: grid;
     gap: clamp(1rem, 2vw, 1.5rem);
-    width: 100%;
+    width: 70vw;
   }
 
   .panel_layout {
     display: grid;
     gap: clamp(1rem, 3vw, 2.25rem);
     align-items: start;
+    
   }
 
   .panel_meta {
@@ -1247,10 +1276,24 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     align-content: start;
     align-self: start;
     min-width: 0;
-    border: 1px solid rgba(148, 163, 184, 0.28);
+    /* border: 1px solid rgb(0, 0, 0); */
+    /* background-color: red; */
     border-radius: 8px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.82) 100%);
+    /* box-shadow: 0 0 10px #e6e600; */
+    margin-right: 20px;
+    /* background:#e1e7ef7e;  */
+    /* background: linear-gradient(180deg, rgba(235, 245, 250, 0.98) 0%, rgba(178, 207, 244, 0.949) 100%); */
     padding: 1.1rem;
+  }
+
+  .instruction {
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 8px;
+    margin-bottom: 50px;
+    box-shadow: 0 0 10px #e6e600;
+    padding: 10px;
+    text-align:center;
+    font-size: 14px;
   }
 
   .panel_header {
@@ -1288,6 +1331,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     line-height: 1.55;
     text-align: left;
     color: #475569;
+    
   }
 
   .panel_controls {
@@ -1358,7 +1402,8 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07);
     overflow: hidden;
-    padding: clamp(1rem, 2vw, 1.45rem);
+    margin-left:20px;
+    /* padding: clamp(1rem, 2vw, 1.45rem); */
   }
 
   svg {
@@ -1695,13 +1740,25 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
       grid-template-rows: auto auto minmax(0, 1fr);
     }
 
-    .awardee-panel {
-      margin: 0;
-    }
+    
 
     .back-button {
       justify-self: start;
     }
   }
 
+  @media (max-width: 899px) {
+    .cloud-shell--with-legend-slot {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .legend--side {
+      width: 100%;
+      justify-items: start;
+      text-align: left;
+    }
+
+  }
+
+  
 </style>
