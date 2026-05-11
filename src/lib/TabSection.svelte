@@ -29,6 +29,7 @@
           criteriaName={tabs[activeTab].criteriaName}
           valueLabel={tabs[activeTab].valueLabel}
           unit={tabs[activeTab].unit}
+          displayMultiplier={tabs[activeTab].displayMultiplier}
           legendBins={tabs[activeTab].legendBins}
           colorStops={tabs[activeTab].colorStops}
           visualEncoding={tabs[activeTab].visualEncoding ?? 'color'}

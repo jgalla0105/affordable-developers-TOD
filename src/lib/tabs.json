@@ -36,6 +36,7 @@
     "townNameProperty": "NAME",
     "valueLabel": "% Rent Burdened",
     "unit": "%",
+    "displayMultiplier": 1,
     "legendBins": [
       { "label": "0 – 15%", "color": "#FFF3E0" },
       { "label": "15 – 25%", "color": "#FFD9A1" },
@@ -45,10 +46,10 @@
     ],
     "colorStops": [
       { "min": 0, "color": "#FFF3E0" },
-      { "min": 0.15, "color": "#FFD9A1" },
-      { "min": 0.25, "color": "#F8B75C" },
-      { "min": 0.35, "color": "#F09E22" },
-      { "min": 0.52, "color": "#ED8B00" }
+      { "min": 15, "color": "#FFD9A1" },
+      { "min": 25, "color": "#F8B75C" },
+      { "min": 35, "color": "#F09E22" },
+      { "min": 52, "color": "#ED8B00" }
     ]
   },
   {

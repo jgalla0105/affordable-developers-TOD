@@ -11,6 +11,7 @@
 	export let criteriaName;     // shown in the info panel header and legend title
 	export let valueLabel;       // tooltip label, e.g. '% Multifamily'
 	export let unit = "%";       // appended to the hover value
+	export let displayMultiplier = null;
 	export let legendBins = [];  // [{ label: "0 – 5%", color: "#f7fbff" }, ...]
 	export let colorStops = [];  // [{ min: 0, color: "#f7fbff" }, ...] using raw data values
 	export let noDataColor = "#d9d9d9";
@@ -269,9 +270,13 @@
 			return null;
 		}
 
+		const value = displayMultiplier == null
+			? unit === "%" ? numericValue * 100 : numericValue
+			: numericValue * displayMultiplier;
+
 		return unit === "%"
-			? (numericValue * 100).toFixed(1)
-			: numberFormat.format(numericValue);
+			? value.toFixed(1)
+			: numberFormat.format(value);
 	}
 
 	function getFillColorExpression() {
