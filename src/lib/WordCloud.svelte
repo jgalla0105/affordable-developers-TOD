@@ -1060,12 +1060,10 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
             <p class="panel_summary"> {summaryText}</p>
           </div>
             {:else}
-            <div>
-            <p class="instruction">{summaryText}</p>
+            <div class="instruction">
+            <p>{summaryText}</p>
             </div>
           
-        
-      
       {/if}
 
       {#if selectedCategory}
@@ -1325,6 +1323,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     display: grid;
     gap: clamp(1rem, 3vw, 2.25rem);
     align-items: start;
+    
   }
 
   .panel_meta {
@@ -1333,7 +1332,8 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     align-content: start;
     align-self: start;
     min-width: 0;
-    border: 1px solid rgb(0, 0, 0);
+    /* border: 1px solid rgb(0, 0, 0); */
+    /* background-color: red; */
     border-radius: 8px;
     /* box-shadow: 0 0 10px #e6e600; */
     margin-right: 20px;
@@ -1387,6 +1387,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     line-height: 1.55;
     text-align: left;
     color: #475569;
+    
   }
 
   .panel_controls {

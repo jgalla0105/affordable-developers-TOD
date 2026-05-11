@@ -72,9 +72,9 @@
    <div class="section">
     <h2 class="section-heading section-heading--subsection">How is state funding currently going towards these principles?</h2>
 
-    <p>Established in 2021, the MBTA Communities Act encourages communities near transit to create more opportunities for multi-family housing. The goal is to support vibrant, walkable neighborhoods where more people can live close to trains, buses, jobs, shops, and other daily needs.
-Under the Act, cities and towns served by the MBTA are asked to plan for a certain amount of multi-family housing based on their proximity to transit. Communities that meet these requirements remain eligible for important state funding programs that can help support transit-oriented development and other local improvements. Learn more about the act <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank">here</a>, and more on how some of that state funding is being used by awardee communities below <span class="arrow">&darr;</span></p>
-
+    <p>Established in 2021, the <strong>MBTA Communities Act</strong> encourages communities near transit to create more opportunities for multi-family housing. The goal is to support vibrant, walkable neighborhoods where more people can live close to trains, buses, jobs, shops, and other daily needs.
+        Under the Act, cities and towns served by the MBTA are asked to plan for a certain amount of multi-family housing based on their proximity to transit. </p>
+    <p>Communities that meet these requirements <strong>remain eligible for important state funding programs that can help support transit-oriented development</strong> and other local improvements. Learn more about the act <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank">here</a>, and more on how some of that state funding is being used by awardee communities below <span class="arrow">&darr;</span></p>
 
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
     <p class="placeholder"> transition to next section</p>
@@ -209,14 +209,17 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         background-color: rgb(255, 255, 255);
         width: 100%;
         height: 100vh;
-
+        margin-bottom: 50px;
+    
     }
 
     .scrolly {
         background-color: #fcfbec;
+        margin-bottom: 50px;
     }
     .wordcloud {
         background-color:#ffffff;
+        margin-bottom: 50px;
         /* height: 100vh; */
     }
     .map {
