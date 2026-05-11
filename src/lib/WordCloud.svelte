@@ -944,20 +944,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     return 'middle';
   }
 
-  function createLegendBins(maxValue, accentColor) {
-    if (!Number.isFinite(maxValue) || maxValue <= 0) {
-      return [{ label: fundingPerCapitaFormat.format(0), color: accentColor }];
-    }
-
-    return [
-      { label: `${fundingPerCapitaFormat.format(0)} - ${fundingPerCapitaFormat.format(maxValue / 3)}`, color: '#D8E4F2' },
-      { label: `${fundingPerCapitaFormat.format(maxValue / 3)} - ${fundingPerCapitaFormat.format((maxValue * 2) / 3)}`, color: '#8EAACB' },
-      { label: `${fundingPerCapitaFormat.format((maxValue * 2) / 3)}+`, color: accentColor }
-    ];
-  }
-
-  $: legendBins = selectedCategory ? createLegendBins(maxBarValue, tooltipAccentColor) : [];
-
 </script>
 
 <svelte:window on:click={handleWindowClick} />
@@ -1235,19 +1221,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
         aria-hidden={!selectedCategory}
       >
         {#if selectedCategory}
-        <div class="instruction"><strong>Hover</strong> over a community bar to preview its funding stats and project list, or <strong>click</strong> one to keep it selected.</div>
-          <p class="legend_title">Per capita funds</p>
-          <p class="legend_mode">{SCALE_MODE_LABELS[scaleMode]}</p>
-
-          <div class="legend_bins" aria-label={`Funding per capita color bins for ${selectedCategory}`}>
-            {#each legendBins as bin}
-              <div class="legend_bin">
-                <span class="legend_bin-label">{bin.label}</span>
-                <span class="legend_bin-swatch" style:background-color={bin.color}></span>
-              </div>
-            {/each}
-          </div>
-          
+          <div class="instruction"><strong>Hover</strong> over a community bar to preview its funding stats and project list, or <strong>click</strong> one to keep it selected.</div>
         {/if}
       </div>
     </div>
@@ -1762,10 +1736,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
   }
 
   @media (max-width: 899px) {
-    .cloud-shell--with-legend-slot {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
     .legend--side {
       width: 100%;
       justify-items: start;
