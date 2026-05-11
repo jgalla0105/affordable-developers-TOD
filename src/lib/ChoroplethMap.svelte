@@ -131,7 +131,6 @@
 
 <style>
 	.map-container {
-		width: 100%;
 		min-height: 520px;
 	}
 
