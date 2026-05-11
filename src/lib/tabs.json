@@ -11,11 +11,18 @@
     "valueLabel": "% Multifamily",
     "unit": "%",
     "legendBins": [
-      { "label": "0 – 5%", "color": "#E7F5ED" },
-      { "label": "5 – 15%", "color": "#A8DDBA" },
-      { "label": "15 – 30%", "color": "#5AAE75" },
-      { "label": "30 – 70%", "color": "#238B45" },
-      { "label": "70%+", "color": "#00873C" }
+      { "label": "0 – 5%", "color": "#F1F3F4" },
+      { "label": "5 – 15%", "color": "#D4D9DC" },
+      { "label": "15 – 30%", "color": "#AEB7BC" },
+      { "label": "30 – 70%", "color": "#909BA1" },
+      { "label": "70%+", "color": "#7C878E" }
+    ],
+    "colorStops": [
+      { "min": 0, "color": "#F1F3F4" },
+      { "min": 0.05, "color": "#D4D9DC" },
+      { "min": 0.15, "color": "#AEB7BC" },
+      { "min": 0.3, "color": "#909BA1" },
+      { "min": 0.7, "color": "#7C878E" }
     ]
   },
   {
@@ -30,11 +37,18 @@
     "valueLabel": "% Mixed-use",
     "unit": "%",
     "legendBins": [
-      { "label": "0 – 2.1%", "color": "#E7F5ED" },
-      { "label": "2.1 – 4.3%", "color": "#A8DDBA" },
-      { "label": "4.3 – 6.4%", "color": "#5AAE75" },
-      { "label": "6.4 – 8.5%", "color": "#238B45" },
-      { "label": "8.5%+", "color": "#00873C" }
+      { "label": "0 – 2.1%", "color": "#F1F3F4" },
+      { "label": "2.1 – 4.3%", "color": "#D4D9DC" },
+      { "label": "4.3 – 6.4%", "color": "#AEB7BC" },
+      { "label": "6.4 – 8.5%", "color": "#909BA1" },
+      { "label": "8.5%+", "color": "#7C878E" }
+    ],
+    "colorStops": [
+      { "min": 0, "color": "#F1F3F4" },
+      { "min": 0.021, "color": "#D4D9DC" },
+      { "min": 0.043, "color": "#AEB7BC" },
+      { "min": 0.064, "color": "#909BA1" },
+      { "min": 0.085, "color": "#7C878E" }
     ]
   },
   {
@@ -49,11 +63,18 @@
     "valueLabel": "% Rent Burdened",
     "unit": "%",
     "legendBins": [
-      { "label": "0 – 15%", "color": "#FBE9E6" },
-      { "label": "15 – 25%", "color": "#F4B7AE" },
-      { "label": "25 – 35%", "color": "#E77F70" },
-      { "label": "35 – 52%", "color": "#D55243" },
-      { "label": "52%+", "color": "#C83C2D" }
+      { "label": "0 – 15%", "color": "#FFF3E0" },
+      { "label": "15 – 25%", "color": "#FFD9A1" },
+      { "label": "25 – 35%", "color": "#F8B75C" },
+      { "label": "35 – 52%", "color": "#F09E22" },
+      { "label": "52%+", "color": "#ED8B00" }
+    ],
+    "colorStops": [
+      { "min": 0, "color": "#FFF3E0" },
+      { "min": 0.15, "color": "#FFD9A1" },
+      { "min": 0.25, "color": "#F8B75C" },
+      { "min": 0.35, "color": "#F09E22" },
+      { "min": 0.52, "color": "#ED8B00" }
     ]
   },
   {
@@ -68,11 +89,18 @@
     "valueLabel": "% of Buildings with Climate Resistance",
     "unit": "%",
     "legendBins": [
-      { "label": "0 – 0.12", "color": "#E8EEF9" },
-      { "label": "0.12 – 0.20", "color": "#B8C9EA" },
-      { "label": "0.20 – 0.30", "color": "#7FA0D7" },
-      { "label": "0.30 – 0.79", "color": "#3E6DB8" },
-      { "label": "0.79+", "color": "#1441A0" }
+      { "label": "0 – 0.12", "color": "#E6EEF9" },
+      { "label": "0.12 – 0.20", "color": "#B8CCE9" },
+      { "label": "0.20 – 0.30", "color": "#7EA3D8" },
+      { "label": "0.30 – 0.79", "color": "#3F70BD" },
+      { "label": "0.79+", "color": "#003DA5" }
+    ],
+    "colorStops": [
+      { "min": 0, "color": "#E6EEF9" },
+      { "min": 0.12, "color": "#B8CCE9" },
+      { "min": 0.2, "color": "#7EA3D8" },
+      { "min": 0.3, "color": "#3F70BD" },
+      { "min": 0.79, "color": "#003DA5" }
     ]
   },
   {
@@ -87,11 +115,18 @@
     "valueLabel": "% Disabled",
     "unit": "%",
     "legendBins": [
-      { "label": "4 – 8%", "color": "#E8EEF9" },
-      { "label": "8 – 10%", "color": "#B8C9EA" },
-      { "label": "10 – 13%", "color": "#7FA0D7" },
-      { "label": "13 – 21%", "color": "#3E6DB8" },
-      { "label": "21%+", "color": "#1441A0" }
+      { "label": "4 – 8%", "color": "#E6EEF9" },
+      { "label": "8 – 10%", "color": "#B8CCE9" },
+      { "label": "10 – 13%", "color": "#7EA3D8" },
+      { "label": "13 – 21%", "color": "#3F70BD" },
+      { "label": "21%+", "color": "#003DA5" }
+    ],
+    "colorStops": [
+      { "min": 0, "color": "#E6EEF9" },
+      { "min": 0.08, "color": "#B8CCE9" },
+      { "min": 0.1, "color": "#7EA3D8" },
+      { "min": 0.13, "color": "#3F70BD" },
+      { "min": 0.21, "color": "#003DA5" }
     ]
   },
   {
@@ -106,11 +141,18 @@
     "valueLabel": "Parking Lots",
     "unit": "",
     "legendBins": [
-      { "label": "0", "color": "#FFF2DF" },
-      { "label": "1 – 3", "color": "#F8D19B" },
-      { "label": "3 – 10", "color": "#F1B061" },
-      { "label": "10 – 36", "color": "#E99B3E" },
-      { "label": "36+", "color": "#E19132" }
+      { "label": "0", "color": "#F4E6F0" },
+      { "label": "1 – 3", "color": "#DDB7D2" },
+      { "label": "3 – 10", "color": "#BF7FB0" },
+      { "label": "10 – 36", "color": "#9E4F8C" },
+      { "label": "36+", "color": "#80276C" }
+    ],
+    "colorStops": [
+      { "min": 0, "color": "#F4E6F0" },
+      { "min": 1, "color": "#DDB7D2" },
+      { "min": 3, "color": "#BF7FB0" },
+      { "min": 10, "color": "#9E4F8C" },
+      { "min": 36, "color": "#80276C" }
     ]
   }
 ]
