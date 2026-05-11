@@ -209,9 +209,9 @@
 			source: sourceId,
 			paint: {
 				"circle-radius": getCircleRadiusExpression(),
-				"circle-color": circleColor,
+				"circle-color": getCircleColorExpression(),
 				"circle-opacity": 0.64,
-				"circle-stroke-color": circleColor,
+				"circle-stroke-color": getCircleColorExpression(),
 				"circle-stroke-width": 1.5,
 				"circle-stroke-opacity": 0.85
 			}
@@ -325,6 +325,15 @@
 			["linear"],
 			["to-number", ["get", valueProperty], 0],
 			...sortedStops.flatMap(({ value, radius }) => [value, radius * multiplier])
+		];
+	}
+
+	function getCircleColorExpression() {
+		return [
+			"case",
+			["==", ["to-number", ["get", valueProperty], 0], 0],
+			"#000000",
+			circleColor
 		];
 	}
 
