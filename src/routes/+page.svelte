@@ -4,6 +4,7 @@
     import WordCloud from '$lib/WordCloud.svelte';
     import IntroNarrative from '$lib/IntroNarrative.svelte';
     import TabSection from '../lib/TabSection.svelte';
+    import IntroMap from '$lib/IntroMap.svelte'
     // import intro from '$lib/intro.json';
 
     const todFigureCandidates = ['tod-intro.png', 'tod-intro.jpg', 'tod-intro.jpeg', 'tod-intro.webp', 'tod-intro.svg'];
@@ -50,7 +51,7 @@
        with less reliance on cars. By pairing zoning changes with walkable streets, bike access, and
        affordable housing, TOD aims to create more sustainable, connected, and equitable communities.
    </p>
-    
+
 
    <p>
         In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are: <span style="color: #7C878E; font-weight: bold;">density and mix of uses</span>, <span style="color: #ED8B00; font-weight: bold;">equitable development</span>, <span style="color: #003DA5; font-weight: bold;">a great public realm</span>, and <span style="color: #80276C; font-weight: bold;">a TOD approach to parking</span>.
@@ -77,18 +78,20 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         The word cloud below offers an overview of how transit-oriented
         development is being advanced in compliant MBTA communities. At the top level, larger words highlight the project categories that have the most communities investing funding in them; select a category to reveal the awardees (communities) spending on it, and learn more about what they're developing.
     </p>
-    
+
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
     <p class="placeholder"> transition to next section</p>
     </div>
     </div>
-    
+
     <div class="map">
     <div class="section">
     <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">WHAT COMMUNITIES MIGHT BENEFIT MOST FROM TOD?</h2>
+    <IntroMap/>
+    <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">EXPLORE ON YOUR OWN</h2>
     <TabSection/>
     </div>
-    
+
 
     <hr  style="margin-top:10rem">
         <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org target=blank>Metropolitan Area Planning Commission (MAPC)</a></p>
@@ -112,7 +115,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         </div>
         <p class="refs" style="font-weight:bold; margin-bottom:20px; margin-top:20px;">6.C35/C85 MIT Interactive Visualization & Society | Spring 2026</p>
     </div>
-   
+
 
 
 
@@ -196,14 +199,14 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
     .refs {
         text-align: center;
         font-style:italic;
-        color:rgb(158, 158, 158); 
+        color:rgb(158, 158, 158);
         font-size: 1rem;
     }
     .intro {
         background-color: rgb(255, 255, 255);
         width: 100%;
         height: 100vh;
-        
+
     }
 
     .scrolly {
@@ -230,7 +233,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         display: grid;
         gap: var(--section-gap);
     }
-    
+
 
     .section-heading {
         margin: 0;
@@ -263,6 +266,6 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         color:brown;
     }
 
-    
+
 
 </style>
