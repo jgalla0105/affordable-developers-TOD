@@ -218,6 +218,7 @@
         background-color: rgb(255, 255, 255);
         width: 100%;
         height: 100vh;
+        padding-bottom: 50px;
     }
 
     .scrolly {

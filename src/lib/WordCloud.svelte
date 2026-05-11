@@ -1221,6 +1221,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
                       y={getBarCenterY(index)}
                       text-anchor="end"
                       dominant-baseline="central"
+                      style="margin-left: 2px;"
                     >
                       {fundingPerCapitaFormat.format(bar.fundingPerCapita)}
                     </text>
@@ -1902,4 +1903,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     }
 
   }
+
+  
 </style>
