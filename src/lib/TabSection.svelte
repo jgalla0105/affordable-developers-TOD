@@ -30,6 +30,7 @@
           valueLabel={tabs[activeTab].valueLabel}
           unit={tabs[activeTab].unit}
           legendBins={tabs[activeTab].legendBins}
+          colorStops={tabs[activeTab].colorStops}
         />
       {/key}
     </div>
@@ -118,4 +119,3 @@
     color: rgb(59, 59, 59);
   }
 </style>
-

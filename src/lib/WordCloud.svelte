@@ -4,7 +4,6 @@
     ascending,
     csv,
     extent,
-    hsl,
     max,
     rollups,
     scaleOrdinal,
@@ -143,8 +142,8 @@
   $: panelTitle = selectedCategory ? selectedCategory : '';
   $: tooltipAccentColor = selectedCategory ? categoryColor(selectedCategory) ?? '#0ea5c6' : '#0ea5c6';
   $: scaleModeDescription = scaleMode === 'global'
-    ? 'Bars and colors use the same funding-per-capita scale across every category.'
-    : 'Bars and colors are scaled within this category for easier local comparison.';
+    ? 'Bars use the same funding-per-capita scale across every category.'
+    : 'Bars are scaled within this category for easier local comparison.';
 
   $: summaryText = selectedCategory
     ? `${scaleModeDescription}`
@@ -161,70 +160,26 @@
       return () => (minFont + maxFont) / 2;
     }
 
-    return scaleSqrt().domain([minValue, maxValue]).range([minFont, maxFont]);
-  }
+    const baseScale = scaleSqrt().domain([minValue, maxValue]).range([minFont, maxFont]);
+    const midpoint = (minValue + maxValue) / 2;
 
-  const PER_CAPITA_COLOR_STEPS = [
-    { limit: 0.2, saturation: 0.34, lightness: 0.72 },
-    { limit: 0.4, saturation: 0.48, lightness: 0.64 },
-    { limit: 0.6, saturation: 0.62, lightness: 0.56 },
-    { limit: 0.8, saturation: 0.76, lightness: 0.48 },
-    { limit: 1, saturation: 0.9, lightness: 0.4 }
-  ];
+    return (value) => {
+      const baseSize = baseScale(value);
 
-  function getPerCapitaColorStep(value, [minFunds, maxFunds]) {
-    if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds) || minFunds === maxFunds) {
-      return PER_CAPITA_COLOR_STEPS[Math.floor(PER_CAPITA_COLOR_STEPS.length / 2)];
-    }
+      if (value === maxValue) {
+        return baseSize * 1.16;
+      }
 
-    const t = clamp((value - minFunds) / (maxFunds - minFunds), 0, 1);
+      if (value > midpoint) {
+        return baseSize * 1.04;
+      }
 
-    return PER_CAPITA_COLOR_STEPS.find((step) => t <= step.limit) ?? PER_CAPITA_COLOR_STEPS[PER_CAPITA_COLOR_STEPS.length - 1];
-  }
+      if (value === minValue) {
+        return baseSize * 0.88;
+      }
 
-  function saturateCategoryColor(category, fund, [minFunds, maxFunds]) {
-    const base = hsl(categoryColor(category) ?? '#64748b');
-    const step = getPerCapitaColorStep(fund, [minFunds, maxFunds]);
-
-    return hsl(base.h, step.saturation, step.lightness).formatHex();
-  }
-
-  function getPerCapitaStepColor(category, step) {
-    const base = hsl(categoryColor(category) ?? '#64748b');
-
-    return hsl(base.h, step.saturation, step.lightness).formatHex();
-  }
-
-  function buildDiscretePerCapitaLegendBins(category, [minFunds, maxFunds]) {
-    if (!category) {
-      return [];
-    }
-
-    if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds)) {
-      return [];
-    }
-
-    if (minFunds === maxFunds) {
-      const step = getPerCapitaColorStep(minFunds, [minFunds, maxFunds]);
-
-      return [{
-        label: fundingPerCapitaFormat.format(minFunds),
-        color: getPerCapitaStepColor(category, step)
-      }];
-    }
-
-    const range = maxFunds - minFunds;
-
-    return PER_CAPITA_COLOR_STEPS.map((step, index) => {
-      const lowerLimit = index === 0 ? 0 : PER_CAPITA_COLOR_STEPS[index - 1].limit;
-      const lowerValue = minFunds + range * lowerLimit;
-      const upperValue = minFunds + range * step.limit;
-
-      return {
-        label: `${fundingPerCapitaFormat.format(lowerValue)} - ${fundingPerCapitaFormat.format(upperValue)}`,
-        color: getPerCapitaStepColor(category, step)
-      };
-    }).reverse();
+      return baseSize * 0.96;
+    };
   }
 
   function getFundingPerCapita(funds, population) {
@@ -261,11 +216,7 @@
     }));
   }
 
-  function getAwardeeBars(
-    category,
-    awardees = getAwardeeMetrics(category),
-    fundingPerCapitaExtent = extent(awardees.map(({ fundingPerCapita }) => fundingPerCapita))
-  ) {
+  function getAwardeeBars(category, awardees = getAwardeeMetrics(category)) {
     return awardees.map(({ awardee, population, funds, fundingPerCapita }) => ({
       kind: 'awardee',
       text: awardee,
@@ -275,7 +226,7 @@
       population,
       funds,
       fundingPerCapita,
-      fill: saturateCategoryColor(category, fundingPerCapita, fundingPerCapitaExtent),
+      fill: categoryColor(category) ?? '#64748b',
       title: `${awardee}: Funding per capita ${fundingPerCapitaFormat.format(fundingPerCapita)}, Total funds ${fundsFormat.format(funds)}, Population ${numberFormat.format(population)}`
     }));
   }
@@ -383,11 +334,8 @@
     .map(({ fundingPerCapita }) => fundingPerCapita)
     .filter((value) => Number.isFinite(value));
   $: globalAwardeeFundingPerCapitaExtent = extent(globalAwardeeFundingPerCapita);
-  $: activeFundingPerCapitaExtent = scaleMode === 'global'
-    ? globalAwardeeFundingPerCapitaExtent
-    : awardeeFundingPerCapitaExtent;
   $: awardeeBars = selectedCategory
-    ? getAwardeeBars(selectedCategory, awardeeMetrics, activeFundingPerCapitaExtent)
+    ? getAwardeeBars(selectedCategory, awardeeMetrics)
     : [];
 
 
@@ -934,11 +882,6 @@ $: {
     }
 }
 
-// Legend and bars use the same funding-per-capita metric as length and color.
-$: legendBins = selectedCategory
-  ? buildDiscretePerCapitaLegendBins(selectedCategory, activeFundingPerCapitaExtent)
-  : [];
-
 $: chartTop = selectedCategory ? clamp(height * 0.18, 96, 126) : 0;
 $: chartInsetX = selectedCategory ? clamp(width * 0.035, 24, 50) : 0;
 $: chartLabelWidth = selectedCategory ? clamp(width * 0.19, 118, 220) : 0;
@@ -1116,7 +1059,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
       {/if}
     </div>
 
-    <div class="cloud-shell cloud-shell--with-legend-slot">
+    <div class="cloud-shell">
       <div class="cloud-frame" bind:this={container}>
         {#if loading}
           <div class="state-message">Loading CSV…</div>
@@ -1452,12 +1395,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     align-items: start;
   }
 
-  .cloud-shell--with-legend-slot {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: clamp(0.75rem, 2vw, 1.25rem);
-    align-items: start;
-  }
-
   .cloud-frame {
     min-width: 0;
     border-radius: 8px;
@@ -1786,87 +1723,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
   code {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.92em;
-  }
-
-  .legend {
-    display: grid;
-    gap: 0.55rem;
-    width: 100%;
-    padding: 1rem 1rem 0.95rem;
-    border-radius: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.26);
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
-  }
-
-  .legend--side {
-    width: clamp(9rem, 14vw, 11.5rem);
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-    justify-items: end;
-    align-content: center;
-    text-align: right;
-  }
-
-  .legend--placeholder {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .legend_title {
-    margin: 0;
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: uppercase;
-    color: #475569;
-  }
-
-  .legend--side .legend_title {
-    width: 100%;
-  }
-
-  .legend_mode {
-    width: 100%;
-    margin: -0.15rem 0 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: uppercase;
-    color: #64748b;
-  }
-
-  .legend_bins {
-    display: grid;
-    gap: 0.38rem;
-    width: 100%;
-    margin-top: 0.35rem;
-  }
-
-  .legend_bin {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 1rem;
-    align-items: center;
-    gap: 0.45rem;
-  }
-
-  .legend_bin-label {
-    min-width: 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    line-height: 1.15;
-    color: #475569;
-    white-space: normal;
-  }
-
-  .legend_bin-swatch {
-    width: 1rem;
-    height: 1.25rem;
-    border-radius: 3px;
-    border: 1px solid rgba(15, 23, 42, 0.16);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
   }
 
   @media (min-width: 900px) {
