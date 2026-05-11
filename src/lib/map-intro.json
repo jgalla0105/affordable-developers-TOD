@@ -6,7 +6,7 @@
         "problem": "Milton has the lowest level of <strong>multifamily housing</strong> among rapid transit communities at just <strong>12.95%</strong>. This is a problem because it restricts housing supply, increases costs, and prevents the community from maximizing its transit infrastructure.",
         "solution": "Milton needs the <strong>'Density and Mix of Uses'</strong> principle because it advocates for zoning that allows compact, diverse housing types right next to transit stations, increasing supply and creating walkable, vibrant neighborhoods.",
         "alt": "Drawn image of a TOD neighborhood with mixed-use buildings highlighted",
-        "color": "#00843D"
+        "color": "#7C878E"
     },
     {
         "title": "Rent Burden",
@@ -15,7 +15,7 @@
         "problem": "Rockport has the highest <strong>rent burden</strong>, with <strong>36%</strong> of its population paying at least 50% of their income on rent. This is a problem because it causes severe financial instability and risks displacing long-time or vulnerable residents.",
         "solution": "Rockport needs the <strong>'Equitable Development'</strong> principle because it prioritizes creating and preserving affordable housing near transit. It ensures people of all income levels can live near stations, reducing both their housing and transportation costs.",
         "alt": "Drawn image of a TOD neighborhood with affordable housing and public transportation highlighted",
-        "color": "#DA291C"
+        "color": "#ED8B00"
     },
     {
         "title": "Resistance to Climate Change",
@@ -42,6 +42,6 @@
         "problem": "Communities like Worcester, Kingston, and Grafton <strong>lack parking near their commuter rail stations.</strong> This is a problem because people in these spread-out Zone 8 towns cannot reasonably access the train if they cannot park near it.",
         "solution": "These communities need <strong>'A TOD Approach to Parking'</strong> because it focuses on 'right-sizing' parking. It encourages building efficient, shared parking structures or boosting multi-modal access (like shuttle buses and bike paths) so commuters can easily reach the station.",
         "alt": "Drawn image of a TOD neighborhood with a parking lot highlighted",
-        "color": "#ED8B00"
+        "color": "#80276C"
     }
 ]
