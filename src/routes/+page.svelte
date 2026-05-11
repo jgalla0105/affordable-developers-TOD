@@ -54,7 +54,7 @@
 
 
    <p>
-        In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are: <span style="color: #00843D; font-weight: bold;">density and mix of uses</span>, <span style="color: #DA291C; font-weight: bold;">equitable development</span>, <span style="color: #003DA5; font-weight: bold;">a great public realm</span>, and <span style="color: #ED8B00; font-weight: bold;">a TOD approach to parking</span>.
+        In the Greater Boston area, the Massachusetts Department of Transportation (MassDOT) and the Massachusetts Bay Transportation Authority (MBTA) have established four foundational principles that provide guidance to their pursuit of transit-oriented development. These principles are: <span style="color: #7C878E; font-weight: bold;">density and mix of uses</span>, <span style="color: #ED8B00; font-weight: bold;">equitable development</span>, <span style="color: #003DA5; font-weight: bold;">a great public realm</span>, and <span style="color: #80276C; font-weight: bold;">a TOD approach to parking</span>.
    </p>
 
    </div>
@@ -72,7 +72,8 @@
    <div class="section">
     <h2 class="section-heading section-heading--subsection">HOW IS STATE FUNDING CURRENTLY GOING TOWARDS THESE PRINCIPLES?</h2>
 
-    <p>Established in 2021, the MBTA Communities Act is a state-issued ordinance focused on building multi-family housing supply near mass transit services. Based on proximity to MBTA transit service, the Communities Act requires cities to possess a stated quantity of multi-family housing to provide additional funding to transit-oriented development projects. Failure to comply prevents access to certain areas of state funding. Learn more about the MBTA Communities and its different grants listed in Section 3A, <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank">here.</a></p>
+    <p>Established in 2021, the MBTA Communities Act encourages communities near transit to create more opportunities for multi-family housing. The goal is to support vibrant, walkable neighborhoods where more people can live close to trains, buses, jobs, shops, and other daily needs.
+Under the Act, cities and towns served by the MBTA are asked to plan for a certain amount of multi-family housing based on their proximity to transit. Communities that meet these requirements remain eligible for important state funding programs that can help support transit-oriented development and other local improvements. Learn more about the act <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank">here</a>, and more on how some of that state funding is being used below <span class="arrow">&darr;</span></p>
     <p>
         The word cloud below offers an overview of how transit-oriented
         development is being advanced in compliant MBTA communities. At the top level, larger words highlight the project categories that have the most communities investing funding in them; select a category to reveal the awardees (communities) spending on it, and learn more about what they're developing.
@@ -94,8 +95,25 @@
 
     <hr  style="margin-top:10rem">
         <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org target=blank>Metropolitan Area Planning Commission (MAPC)</a></p>
-        <p class="refs" style="font-weight:bold">DATA SOURCES</p>
-        <p class="placeholder">**insert rest of referneces here**</p>
+        
+        <div class="citations">
+            <div>
+                <p class="refTitle">DATA SOURCES</p>
+                <ul style="text-align:left;">
+                    <li>MassDot & MBTA Transit-Oriented Development (TOD) Policies and Guidelines <a class="arrow-link" href="https://mbtarealty.com/wp-content/uploads/2022/09/MassDOT-and-MBTA-TOD-Policy-20170619.pdf" target="_blank">&#8599;</a></li>
+                    <li>U.S. Census Bureau and American Community Surveys <a class="arrow-link" href="https://data.census.gov/" target="_blank">&#8599;</a></li>
+                </ul>
+            </div>
+            <div>
+                    <p class="refTitle">TEAM</p>
+                    <ul style="text-align:left;">
+                        <li>Avril Matute Cruz · Eri-ife Olayinka · Estehr Magbagbeola · Jabes Gallardo</li>
+                    </ul>
+            </div>
+                
+            
+        </div>
+        <p class="refs" style="font-weight:bold; margin-bottom:20px; margin-top:20px;">6.C35/C85 MIT Interactive Visualization & Society | Spring 2026</p>
     </div>
 
 
@@ -114,9 +132,67 @@
      margin: 0;
      font-family: 'Inter', sans-serif;
     }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0); /* Return to original position */
+        }
+        40% {
+            transform: translateY(-20px); /* Bounce up */
+        }
+        60% {
+            transform: translateY(-10px); /* Smaller bounce up */
+        }
+        }
+    
+    .arrow {
+        animation: bounce 2s infinite;
+    }
 
+
+    .arrow-link {
+    text-decoration: none;
+    font-weight:bolder;
+    font-size: 18px;
+    color: rgb(255, 213, 0);
+    transition: 0.3s;
+  }
+  .arrow-link:hover {
+    color: rgb(139, 134, 0);
+    padding-left: 10px; /* Moves the arrow slightly when hovered */
+  }
+
+    ul {
+        list-style:none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 5px;
+    }
+
+
+    .refTitle {
+        text-align: center;
+        font-weight: bold;
+        color:rgb(0, 0, 0); 
+        font-size: 1rem;
+        text-align: left;
+        font-family: 'DotFont', sans-serif;
+    }
+    .citations {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+        max-width: 50%;
+        /* place-items: center; */
+        margin: 0 auto;
+        color:rgb(158, 158, 158); 
+        font-size: 1rem;
+        margin-top: 25px;
+    }
     hr {
-        width: 50%;
+        width: 75%;
         background-color:rgb(158, 158, 158);
         height:1px;
     }

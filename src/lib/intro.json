@@ -4,15 +4,15 @@
         "image": "figures/principle1.jpg",
         "story": "Transit-oriented development centers <strong>dense, mixed-use places within walking distance of transit,</strong> scaled to their surrounding context. By clustering homes, jobs, shops, schools, and entertainment near stations, TOD <strong>boosts ridership, improves transit efficiency, and reduces car reliance.</strong> This mix can happen in one building, across blocks, or around nearby stations.",
         "alt" : "Drawn image of a TOD neighbourhood with mixed use buildings highlighted",
-        "color": "#00843D"
-    },
+        "color": "#7C878E"
+    }, 
     {
         "title": "B. Equitable Development",
         "image": "figures/principle2.jpg",
         "story": "Equitable transit-oriented development pairs <strong>transit access with affordable mixed-income housing, better job access, and community-focused investment.</strong> It helps reduce displacement, lower housing and transportation costs, and expand access to opportunity by <strong>reducing car dependence and long commutes.</strong> Equitable TOD also supports <strong>transit-centered job hubs and last-mile connections,</strong> while strengthening local businesses, services, and climate-resilient development.",
         "alt": "Drawn image of a TOD neighbourhood with affordable housing and public transportation highlighted",
-        "color" : "#DA291C"
-    },
+        "color" : "#ED8B00"
+    }, 
     {
         "title": "C. A Great Public Realm",
         "image": "figures/principle3.jpg",
@@ -25,6 +25,6 @@
         "image": "figures/principle4.jpg",
         "story": "A TOD parking approach <strong>provides only the parking actually needed</strong> and manages it so it does not dominate station areas. By supporting transit, walking, and mixed-use development, TOD can reduce parking demand, lower costs, and <strong>free land for housing, jobs, shops, and public space.</strong> Instead of eliminating parking, it uses lower ratios, shared facilities, strategic park-and-ride, and demand-management programs.",
         "alt": "Drawn image of a TOD neighbourhood with parking lot highlighted",
-        "color": "#ED8B00"
+        "color": "#80276C"
     }
 ]
