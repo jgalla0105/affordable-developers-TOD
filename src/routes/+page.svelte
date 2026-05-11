@@ -55,6 +55,9 @@
 
     $: if (mounted) {
         document.body.style.overflow = showModal ? 'hidden' : '';
+        if (!showModal) {
+            window.scrollTo(0, 0);
+        }
     }
 
     function turnOffIntroModal() {
