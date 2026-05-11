@@ -119,7 +119,7 @@
     <p>Communities that meet these requirements <strong>remain eligible for important state funding programs that can help support transit-oriented development</strong> and other local improvements. Learn more about the act <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank" style="text-decoration:none; color:black;">here &#8599;</a>, and more on how some of that state funding is being used by awardee communities below </p>
 
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
-    <p class="transition"> After seeing how some communities are already benefitting, you might be wondering what TOD investment could have in store for others. Let's explore...</p>
+    <p class="transition"> After seeing how some communities are already benefitting, you might be wondering what TOD investment could have in store for others. Let's explore <span class="arrow">&darr;</span></p>
     </div>
     </div>
 
