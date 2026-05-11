@@ -1,0 +1,47 @@
+[
+    {
+        "title": "Multifamily Housing",
+        "TOD-Principle": "Milton",
+        "image": "figures/milton.jpg",
+        "problem": "Milton has the lowest level of <strong>multifamily housing</strong> among rapid transit communities at just <strong>12.95%</strong>. This is a problem because it restricts housing supply, increases costs, and prevents the community from maximizing its transit infrastructure.",
+        "solution": "Milton needs the <strong>'Density and Mix of Uses'</strong> principle because it advocates for zoning that allows compact, diverse housing types right next to transit stations, increasing supply and creating walkable, vibrant neighborhoods.",
+        "alt": "Drawn image of a TOD neighborhood with mixed-use buildings highlighted",
+        "color": "#00843D"
+    },
+    {
+        "title": "Rent Burden",
+        "TOD-Principle": "Rockport",
+        "image": "figures/Rockport.jpg",
+        "problem": "Rockport has the highest <strong>rent burden</strong>, with <strong>36%</strong> of its population paying at least 50% of their income on rent. This is a problem because it causes severe financial instability and risks displacing long-time or vulnerable residents.",
+        "solution": "Rockport needs the <strong>'Equitable Development'</strong> principle because it prioritizes creating and preserving affordable housing near transit. It ensures people of all income levels can live near stations, reducing both their housing and transportation costs.",
+        "alt": "Drawn image of a TOD neighborhood with affordable housing and public transportation highlighted",
+        "color": "#DA291C"
+    },
+    {
+        "title": "Resistance to Climate Change",
+        "TOD-Principle": "Chelsea",
+        "image": "figures/Chelsea.jpg",
+        "problem": "Chelsea has a <strong>79% Resistance to Climate Change</strong>. While high, urban heat islands are a problem because dense, paved areas without shade amplify rising climate temperatures, causing public health risks.",
+        "solution": "Chelsea needs <strong>'A Great Public Realm'</strong> because it emphasizes sustainable, climate-resilient infrastructure. It encourages planting street trees, adding green spaces, and using heat-reducing materials to cool the path to transit.",
+        "alt": "Drawn image of a TOD neighborhood with a bike lane, crosswalk, and wheelchair-accessible ramps highlighted",
+        "color": "#003DA5"
+    },
+    {
+        "title": "Disability Accessibility",
+        "TOD-Principle": "Fall River",
+        "image": "figures/FallRiver.jpg",
+        "problem": "In Fall River, <strong>21%</strong> of the population experiences high levels of <strong>disability.</strong> This is a problem because poor streetscapes and physical barriers can make it unsafe or impossible for them to access public transit.",
+        "solution": "Fall River needs <strong>'A Great Public Realm'</strong> because it requires universal design. It focuses on building ADA-compliant sidewalks, safe crosswalks, and accessible ramps so everyone has equal access to transit stations.",
+        "alt": "Drawn image of a TOD neighborhood with a bike lane, crosswalk, and wheelchair-accessible ramps highlighted",
+        "color": "#003DA5"
+    },
+    {
+        "title": "Parking Lot Area Nearby",
+        "TOD-Principle": "Kingston",
+        "image": "figures/Kingston.jpg",
+        "problem": "Communities like Worcester, Kingston, and Grafton <strong>lack parking near their commuter rail stations.</strong> This is a problem because people in these spread-out Zone 8 towns cannot reasonably access the train if they cannot park near it.",
+        "solution": "These communities need <strong>'A TOD Approach to Parking'</strong> because it focuses on 'right-sizing' parking. It encourages building efficient, shared parking structures or boosting multi-modal access (like shuttle buses and bike paths) so commuters can easily reach the station.",
+        "alt": "Drawn image of a TOD neighborhood with a parking lot highlighted",
+        "color": "#ED8B00"
+    }
+]
