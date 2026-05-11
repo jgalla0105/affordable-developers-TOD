@@ -1,5 +1,6 @@
 <script>
-    import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
+    import { onMount, onDestroy } from 'svelte';
     import { base } from '$app/paths';
     import WordCloud from '$lib/WordCloud.svelte';
     import IntroNarrative from '$lib/IntroNarrative.svelte';
@@ -9,8 +10,13 @@
 
     const todFigureCandidates = ['tod-intro.png', 'tod-intro.jpg', 'tod-intro.jpeg', 'tod-intro.webp', 'tod-intro.svg'];
     let todFigureSrc = '';
+    let showModal = true;
+    let mounted = false;
 
     onMount(() => {
+        mounted = true;
+        document.body.style.overflow = 'hidden';
+
         let isCancelled = false;
 
         async function findTodFigure() {
@@ -40,7 +46,43 @@
             isCancelled = true;
         };
     });
+
+    onDestroy(() => {
+        if (mounted) {
+            document.body.style.overflow = '';
+        }
+    });
+
+    $: if (mounted) {
+        document.body.style.overflow = showModal ? 'hidden' : '';
+        if (!showModal) {
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function turnOffIntroModal() {
+        // check scroll percentage (away from original boc)
+        // If enough, remove visibility of intro-modal
+        // NOTE: true should be a way to check scroll/button click capability
+        showModal = false;
+        // perhaps some animation to to fade div container
+    }
 </script>
+
+    {#if showModal}
+    <div id="intro-modal" class="modal-overlay" transition:fade={{ duration: 300 }}>
+        <div class="modal-content"
+            role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <h2 class="modal-title" modalTitle>Cities need transit.</h2>
+            <p class="modal-text" text-align="center"> Governments are funding accessible mobility in communities by
+                placing public transport near essentials and housing, a phenomenon known as <b>transit-oriented development</b>.
+
+            </p>
+            <p class="modal-text" text-align="center">Sounds simple, but <i>how</i> is this relevant to Massachusetts?</p>
+            <button type="button" class="close-button" aria-label="Close" on:click={turnOffIntroModal}>Dive in!</button>
+        </div>
+    </div>
+    {/if}
 
     <div class="intro">
     <div class="section">
@@ -98,7 +140,7 @@
     <div class="footer">
     <hr  style="margin-top:10rem">
         <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org target=blank>Metropolitan Area Planning Commission (MAPC)</a></p>
-        
+
         <div class="citations">
             <div>
                 <p class="refTitle">DATA SOURCES</p>
@@ -115,8 +157,8 @@
                         <li>Avril Matute Cruz · Eri-ife Olayinka · Esther Magbagbeola · Jabes Gallardo</li>
                     </ul>
             </div>
-                
-            
+
+
         </div>
         <p class="refs" style="font-weight:bold; margin-bottom:20px; margin-top:20px;">6.C35/C85 MIT Interactive Visualization & Society | Spring 2026</p>
         </div>
@@ -155,7 +197,7 @@
             transform: translateY(-10px); /* Smaller bounce up */
         }
         }
-    
+
     .arrow {
         animation: bounce 2s infinite;
         display: inline-block;
@@ -187,7 +229,7 @@
     .refTitle {
         text-align: center;
         font-weight: bold;
-        color:rgb(0, 0, 0); 
+        color:rgb(0, 0, 0);
         font-size: 1rem;
         text-align: left;
         font-family: 'DotFont', sans-serif;
@@ -199,7 +241,7 @@
         max-width: 50%;
         /* place-items: center; */
         margin: 0 auto;
-        color:rgb(158, 158, 158); 
+        color:rgb(158, 158, 158);
         font-size: 1rem;
         margin-top: 25px;
     }
@@ -284,5 +326,72 @@
 
     
 
+   /* created css  */
+
+    /* Dark semi-transparent background */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fcfbec;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000; /* High z-index */
+    }
+
+    /* White centered box */
+    .modal-content {
+        background: #fcfbec;
+        padding: 40px;
+        width: 90%;
+        max-width: 1000px;
+        text-align: center;
+        position: fixed;
+        border-radius: 4px;
+    }
+
+    .modal-title {
+        font-family: 'DotFont', sans-serif;
+        animation-name: modal-title;
+        animation-duration: 6s;
+        animation-iteration-count: infinite;
+        font-size: 50px;
+    }
+
+    .modal-text {
+        text-align: center;
+        padding: 10px;
+
+
+    }
+
+    .close-button {
+        justify-self: start;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        border: 1px solid rgba(148, 163, 184, 0.55);
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        color: rgb(59, 59, 59);
+        border-radius: 999px;
+        padding: 0.78rem 1.95rem;
+        font: inherit;
+        font-size: 2em;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+        transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    @keyframes modal-title {
+        0%   {color: #80276C;}
+        25%  {color: #003DA5;}
+        50% {color: #ED8B00;}
+        75% {color: black;}
+        100% {color: #80276C;}
+    }
 
 </style>
