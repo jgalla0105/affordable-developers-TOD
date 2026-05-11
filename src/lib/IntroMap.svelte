@@ -1,11 +1,24 @@
 <script>
     import intromap from '$lib/map-intro.json';
+    import { base } from '$app/paths';
     import { slide } from 'svelte/transition';
 
     let expanded = {};
 
     function toggle(id) {
         expanded[id] = !expanded[id];
+    }
+
+    function resolveAssetUrl(path = '') {
+        if (!path || /^(?:[a-z]+:)?\/\//i.test(path)) {
+            return path;
+        }
+
+        if (path.startsWith(base)) {
+            return path;
+        }
+
+        return path.startsWith('/') ? `${base}${path}` : `${base}/${path}`;
     }
 </script>
 
@@ -20,7 +33,7 @@
                     aria-expanded={expanded[i]}
                 >
                     <div class="image-wrapper">
-                        <img src="/{item.image}" alt={item.alt} />
+                        <img src={resolveAssetUrl(item.image)} alt={item.alt} />
                         <div class="badge" style="background-color: {item.color};">
                             {item['TOD-Principle']}
                         </div>
