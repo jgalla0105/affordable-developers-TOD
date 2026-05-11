@@ -74,22 +74,28 @@
 
     <p>Established in 2021, the <strong>MBTA Communities Act</strong> encourages communities near transit to create more opportunities for multi-family housing. The goal is to support vibrant, walkable neighborhoods where more people can live close to trains, buses, jobs, shops, and other daily needs.
         Under the Act, cities and towns served by the MBTA are asked to plan for a certain amount of multi-family housing based on their proximity to transit. </p>
-    <p>Communities that meet these requirements <strong>remain eligible for important state funding programs that can help support transit-oriented development</strong> and other local improvements. Learn more about the act <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank">here</a>, and more on how some of that state funding is being used by awardee communities below <span class="arrow">&darr;</span></p>
+    <p>Communities that meet these requirements <strong>remain eligible for important state funding programs that can help support transit-oriented development</strong> and other local improvements. Learn more about the act <a href="https://www.mass.gov/info-details/multi-family-zoning-requirement-for-mbta-communities#what-is-an-mbta-community" target="_blank" style="text-decoration:none; color:black;">here &#8599;</a>, and more on how some of that state funding is being used by awardee communities below </p>
 
     <WordCloud csvUrl='wordcloud-classified-data.csv' />
-    <p class="placeholder"> transition to next section</p>
+    <p class="transition"> After seeing how some communities are already benefitting, you might be wondering what TOD investment could have in store for others. Let's explore...</p>
+    </div>
+    </div>
+
+    <div class="intro_map">
+    <div class="section">
+    <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">What communities might benefit most from TOD?</h2>
+    <IntroMap/>
     </div>
     </div>
 
     <div class="map">
     <div class="section">
-    <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">What communities might benefit most from TOD?</h2>
-    <IntroMap/>
-    <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">Explore on your own</h2>
-    <TabSection/>
+        <h2 class="section-heading section-heading--subsection" style="margin-top:3rem">Explore on your own</h2>
+        <TabSection/>
+    </div>
     </div>
 
-
+    <div class="footer">
     <hr  style="margin-top:10rem">
         <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org target=blank>Metropolitan Area Planning Commission (MAPC)</a></p>
         
@@ -99,6 +105,8 @@
                 <ul style="text-align:left;">
                     <li>MassDot & MBTA Transit-Oriented Development (TOD) Policies and Guidelines <a class="arrow-link" href="https://mbtarealty.com/wp-content/uploads/2022/09/MassDOT-and-MBTA-TOD-Policy-20170619.pdf" target="_blank">&#8599;</a></li>
                     <li>U.S. Census Bureau and American Community Surveys <a class="arrow-link" href="https://data.census.gov/" target="_blank">&#8599;</a></li>
+                    <li>Property Tax Parcels Land Use <a class="arrow-link" href="https://www.mass.gov/info-details/massgis-data-property-tax-parcels" target="_blank">&#8599;</a> </li>
+                    <li>Massachusetts Property Types Classification Code <a class="arrow-link" href="https://www.mass.gov/files/documents/2016/08/wr/classificationcodebook.pdf" target="_blank">&#8599;</a> </li>
                 </ul>
             </div>
             <div>
@@ -111,8 +119,7 @@
             
         </div>
         <p class="refs" style="font-weight:bold; margin-bottom:20px; margin-top:20px;">6.C35/C85 MIT Interactive Visualization & Society | Spring 2026</p>
-    </div>
-
+        </div>
 
 
 
@@ -125,7 +132,7 @@
         font-display: swap;
     }
     :global(body) {
-     background-color: #fcfbec; /* Replace with your desired color */
+     background-color: #ffffff; /* Replace with your desired color */
      margin: 0;
      font-family: 'Inter', sans-serif;
     }
@@ -134,6 +141,8 @@
         font-family:'DotFont', sans-serif;
         margin-top:100px; 
         color:darkgrey;
+        max-width: 100%;
+        text-align: center;
     }
     @keyframes bounce {
         0%, 20%, 50%, 80%, 100% {
@@ -209,23 +218,27 @@
         background-color: rgb(255, 255, 255);
         width: 100%;
         height: 100vh;
-        margin-bottom: 50px;
-    
     }
 
     .scrolly {
         background-color: #fcfbec;
-        margin-bottom: 50px;
+        padding-bottom: 50px;
+
     }
     .wordcloud {
         background-color:#ffffff;
         margin-bottom: 50px;
         /* height: 100vh; */
     }
-    .map {
+    .intro_map {
         background-color:#fcfbec;
         /* height: 100vh; */
     }
+
+    .map {
+        background-color:#ffffff;
+    }
+    
     .placeholder {
         color: red;
         font-weight: bold;
@@ -256,7 +269,7 @@
         /* font-size: clamp(2.5rem, 7vw, 3.75rem); */
         font-size: 3rem;
         margin-bottom: 3rem;
-        margin-top:3rem;
+        margin-top:2rem;
     }
 
     p {
@@ -268,10 +281,7 @@
         color: rgb(59, 59, 59);
     }
 
-    .placeholder {
-        color:brown;
-    }
-
+    
 
 
 </style>
