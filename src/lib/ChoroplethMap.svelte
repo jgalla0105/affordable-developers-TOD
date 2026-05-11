@@ -317,7 +317,7 @@
 
 		return [
 			"interpolate",
-			["sqrt"],
+			["linear"],
 			["to-number", ["get", valueProperty], 0],
 			...sortedStops.flatMap(({ value, radius }) => [value, radius * multiplier])
 		];
