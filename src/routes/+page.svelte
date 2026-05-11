@@ -134,7 +134,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
 
     <hr  style="margin-top:10rem">
         <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org target=blank>Metropolitan Area Planning Commission (MAPC)</a></p>
-        
+
         <div class="citations">
             <div>
                 <p class="refTitle">DATA SOURCES</p>
@@ -149,8 +149,8 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
                         <li>Avril Matute Cruz · Eri-ife Olayinka · Estehr Magbagbeola · Jabes Gallardo</li>
                     </ul>
             </div>
-                
-            
+
+
         </div>
         <p class="refs" style="font-weight:bold; margin-bottom:20px; margin-top:20px;">6.C35/C85 MIT Interactive Visualization & Society | Spring 2026</p>
     </div>
@@ -171,7 +171,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
      margin: 0;
      font-family: 'Inter', sans-serif;
     }
-    
+
     @keyframes bounce {
         0%, 20%, 50%, 80%, 100% {
             transform: translateY(0); /* Return to original position */
@@ -183,7 +183,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
             transform: translateY(-10px); /* Smaller bounce up */
         }
         }
-    
+
     .arrow {
         animation: bounce 2s infinite;
     }
@@ -214,7 +214,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
     .refTitle {
         text-align: center;
         font-weight: bold;
-        color:rgb(0, 0, 0); 
+        color:rgb(0, 0, 0);
         font-size: 1rem;
         text-align: left;
         font-family: 'DotFont', sans-serif;
@@ -226,7 +226,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         max-width: 50%;
         /* place-items: center; */
         margin: 0 auto;
-        color:rgb(158, 158, 158); 
+        color:rgb(158, 158, 158);
         font-size: 1rem;
         margin-top: 25px;
     }
@@ -305,11 +305,7 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         color:brown;
     }
 
-<<<<<<< HEAD
 
-||||||| ea26390
-    
-=======
    /* created css  */
 
     /* Dark semi-transparent background */
@@ -377,6 +373,5 @@ Under the Act, cities and towns served by the MBTA are asked to plan for a certa
         75% {color: black;}
         100% {color: #80276C;}
     }
->>>>>>> estymagb
 
 </style>
