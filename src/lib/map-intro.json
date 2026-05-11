@@ -5,7 +5,7 @@
         "image": "figures/milton.jpg",
         "problem": "Milton has the lowest level of <strong>multifamily housing</strong> among rapid transit communities at just <strong>12.95%</strong>. This is a problem because it restricts housing supply, increases costs, and prevents the community from maximizing its transit infrastructure.",
         "solution": "Milton needs the <strong>'Density and Mix of Uses'</strong> principle because it advocates for zoning that allows compact, diverse housing types right next to transit stations, increasing supply and creating walkable, vibrant neighborhoods.",
-        "alt": "A conceptual drawing showing a transition from low-density single-family homes and large open parking lots on the left to a dense, vibrant center on the right. The right side features multi-story mixed-use buildings, shops with coffee icons, and a transit station, emphasizing the "Density and Mix of Uses" principle.",
+        "alt": "A conceptual drawing showing a transition from low-density single-family homes and large open parking lots on the left to a dense, vibrant center on the right. The right side features multi-story mixed-use buildings, shops with coffee icons, and a transit station, emphasizing the Density and Mix of Uses principle.",
         "color": "#7C878E"
     },
     {
@@ -14,7 +14,7 @@
         "image": "figures/Rockport.jpg",
         "problem": "Rockport has the highest <strong>rent burden</strong>, with <strong>36%</strong> of its population paying at least 50% of their income on rent. This is a problem because it causes severe financial instability and risks displacing long-time or vulnerable residents.",
         "solution": "Rockport needs the <strong>'Equitable Development'</strong> principle because it prioritizes creating and preserving affordable housing near transit. It ensures people of all income levels can live near stations, reducing both their housing and transportation costs.",
-        "alt": "A black-and-white line drawing showing a diverse group of people, including families and individuals, walking along a sidewalk. They are passing multi-story buildings labeled "Affordable Housing" and "Market Rate" as they head toward a waiting commuter train, illustrating an equitable, mixed-income neighborhood near transit.",
+        "alt": "A black-and-white line drawing showing a diverse group of people, including families and individuals, walking along a sidewalk. They are passing multi-story buildings labeled Affordable Housing and Market Rate as they head toward a waiting commuter train, illustrating an equitable, mixed-income neighborhood near transit.",
         "color": "#ED8B00"
     },
     {
@@ -41,7 +41,7 @@
         "image": "figures/Kingston.jpg",
         "problem": "Communities like Worcester, Kingston, and Grafton <strong>lack parking near their commuter rail stations.</strong> This is a problem because people in these spread-out Zone 8 towns cannot reasonably access the train if they cannot park near it.",
         "solution": "These communities need <strong>'A TOD Approach to Parking'</strong> because it focuses on 'right-sizing' parking. It encourages building efficient, shared parking structures or boosting multi-modal access (like shuttle buses and bike paths) so commuters can easily reach the station.",
-        "alt": "A drawing of a commuter station "Zone 8" platform situated next to a multi-level parking garage and bike racks, showing a "right-sized" approach to station access.",
+        "alt": "A drawing of a commuter station Zone 8 platform situated next to a multi-level parking garage and bike racks, showing a right-sized approach to station access.",
         "color": "#80276C"
     }
 ]
