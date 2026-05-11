@@ -11,9 +11,11 @@
 	export let valueLabel;       // tooltip label, e.g. '% Multifamily'
 	export let unit = "%";       // appended to the hover value
 	export let legendBins = [];  // [{ label: "0 – 5%", color: "#f7fbff" }, ...]
+	export let colorStops = [];  // [{ min: 0, color: "#f7fbff" }, ...] using raw data values
 	export let noDataColor = "#d9d9d9";
 
 	mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+	const numberFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 
 	// ── State ──────────────────────────────────────────────────────────────────
 	let mapContainer;
@@ -30,14 +32,22 @@
 			return;
 		}
 
-		map = new mapboxgl.Map({
-			container: mapContainer,
-			style: styleUrl,
-			center: [-71.2, 42.3],
-			zoom: 8,
-			minZoom: 7,
-			maxZoom: 11,
-		});
+		try {
+			const preparedStyle = await getPreparedStyle();
+
+			map = new mapboxgl.Map({
+				container: mapContainer,
+				style: preparedStyle,
+				center: [-71.2, 42.3],
+				zoom: 8,
+				minZoom: 7,
+				maxZoom: 11,
+			});
+		} catch (err) {
+			error = err instanceof Error ? err.message : "Map style failed to load.";
+			loading = false;
+			return;
+		}
 
 		map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
@@ -50,21 +60,25 @@
 
 		await new Promise(resolve => map.on("load", resolve));
 
-		loading = false;
 		map.getCanvas().style.cursor = "default";
 
 		// Find the first fill layer in the published style for hover queries.
 		const styleLayers = map.getStyle().layers ?? [];
-		const fillLayer =
-			styleLayers.find(
-				l => l.type === "fill" &&
-				/dens|mix|multi|rent|disab|park|heat|choropleth/i.test(
-					l.id + " " + (l["source-layer"] ?? "")
-				)
-			) ??
-			styleLayers.find(l => l.type === "fill");
+		const fillLayer = getTargetFillLayers(styleLayers)[0];
 
-		if (!fillLayer) return;
+		if (!fillLayer) {
+			loading = false;
+			return;
+		}
+
+		const fillColorExpression = getFillColorExpression();
+
+		if (fillColorExpression) {
+			map.setPaintProperty(fillLayer.id, "fill-color-transition", { duration: 0, delay: 0 });
+			map.setPaintProperty(fillLayer.id, "fill-color", fillColorExpression);
+		}
+
+		loading = false;
 
 		map.on("mousemove", event => {
 			const features = map.queryRenderedFeatures(event.point, {
@@ -75,12 +89,114 @@
 				const props = features[0].properties;
 				const townName = props[townNameProperty] ?? "Unknown";
 				const rawValue = props[valueProperty];
-				const displayValue = rawValue != null ? (rawValue * 100).toFixed(1) : null;
+				const displayValue = formatDisplayValue(rawValue);
 				hoveredInfo = { townName, displayValue };
 			} else {
 				hoveredInfo = null;
 			}
 		});
+	}
+
+	async function getPreparedStyle() {
+		if (!styleUrl.startsWith("mapbox://styles/")) {
+			return styleUrl;
+		}
+
+		const stylePath = styleUrl.replace("mapbox://styles/", "");
+		const [username, styleId] = stylePath.split("/");
+
+		if (!username || !styleId) {
+			return styleUrl;
+		}
+
+		const response = await fetch(
+			`https://api.mapbox.com/styles/v1/${username}/${styleId}?access_token=${mapboxgl.accessToken}`
+		);
+
+		if (!response.ok) {
+			throw new Error(`Mapbox style request failed (${response.status}).`);
+		}
+
+		const style = await response.json();
+
+		return applyFillColorOverride(style);
+	}
+
+	function applyFillColorOverride(style) {
+		const fillColorExpression = getFillColorExpression();
+
+		if (!fillColorExpression) {
+			return style;
+		}
+
+		const fillLayers = getTargetFillLayers(style.layers ?? []);
+
+		for (const layer of fillLayers) {
+			layer.paint = {
+				...(layer.paint ?? {}),
+				"fill-color": fillColorExpression,
+				"fill-color-transition": { duration: 0, delay: 0 }
+			};
+		}
+
+		return style;
+	}
+
+	function getTargetFillLayers(layers = []) {
+		const matchingLayers = layers.filter(
+			l => l.type === "fill" &&
+			/dens|mix|multi|rent|disab|park|heat|choropleth/i.test(
+				l.id + " " + (l["source-layer"] ?? "")
+			)
+		);
+
+		return matchingLayers.length > 0
+			? matchingLayers
+			: layers.filter(l => l.type === "fill").slice(0, 1);
+	}
+
+	function formatDisplayValue(rawValue) {
+		const numericValue = Number(rawValue);
+
+		if (!Number.isFinite(numericValue)) {
+			return null;
+		}
+
+		return unit === "%"
+			? (numericValue * 100).toFixed(1)
+			: numberFormat.format(numericValue);
+	}
+
+	function getFillColorExpression() {
+		if (!valueProperty || colorStops.length === 0) {
+			return null;
+		}
+
+		const sortedStops = colorStops
+			.filter(({ min, color }) => Number.isFinite(min) && color)
+			.sort((a, b) => a.min - b.min);
+
+		if (sortedStops.length === 0) {
+			return null;
+		}
+
+		const [firstStop, ...remainingStops] = sortedStops;
+		const stepExpression = [
+			"step",
+			["to-number", ["get", valueProperty]],
+			firstStop.color
+		];
+
+		for (const stop of remainingStops) {
+			stepExpression.push(stop.min, stop.color);
+		}
+
+		return [
+			"case",
+			["has", valueProperty],
+			stepExpression,
+			noDataColor
+		];
 	}
 
 	onMount(() => { initMap(); });
@@ -89,7 +205,7 @@
 
 <!-- ── Info panel ─────────────────────────────────────────────────────────── -->
 <div class="info-panel">
-	<h3>{criteriaName}</h3>
+	<!-- <h3>{criteriaName}</h3> -->
 	{#if hoveredInfo}
 		<p><strong>{hoveredInfo.townName}</strong></p>
 		<p>
@@ -101,7 +217,7 @@
 			{/if}
 		</p>
 	{:else}
-		<p>Hover over a town!</p>
+		<p style="text-align:center;">Hover over a town!</p>
 	{/if}
 </div>
 
@@ -112,7 +228,7 @@
 	<div class="status error">Could not load map: {error}</div>
 {/if}
 
-<div bind:this={mapContainer} class="map-container" class:hidden={!!error} />
+<div bind:this={mapContainer} class="map-container" class:loading={loading && !error} class:hidden={!!error} />
 
 <!-- ── Legend ────────────────────────────────────────────────────────────── -->
 <div class="legend" class:hidden={loading || !!error}>
@@ -136,6 +252,10 @@
 		min-height: 520px;
 	}
 
+	.map-container.loading {
+		visibility: hidden;
+	}
+
 	.map-container.hidden { display: none; }
 
 	.status {
@@ -155,7 +275,8 @@
 		border-radius: 6px;
 		padding: 10px 14px;
 		font-size: 13px;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+		/* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
+		box-shadow: 0 0 10px #e6e600;
 		min-width: 180px;
 		pointer-events: none;
 	}

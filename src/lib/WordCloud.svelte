@@ -4,7 +4,6 @@
     ascending,
     csv,
     extent,
-    hsl,
     max,
     rollups,
     scaleOrdinal,
@@ -140,15 +139,15 @@
     ? rows.filter((row) => row.category === selectedCategory)
     : [];
 
-  $: panelTitle = selectedCategory ? selectedCategory : 'TOD CATEGORIES';
+  $: panelTitle = selectedCategory ? selectedCategory : '';
   $: tooltipAccentColor = selectedCategory ? categoryColor(selectedCategory) ?? '#0ea5c6' : '#0ea5c6';
   $: scaleModeDescription = scaleMode === 'global'
-    ? 'Bars and colors use the same funding-per-capita scale across every category.'
-    : 'Bars and colors are scaled within this category for easier local comparison.';
+    ? 'Bars use the same funding-per-capita scale across every category.'
+    : 'Bars are scaled within this category for easier local comparison.';
 
   $: summaryText = selectedCategory
-    ? `Viewing ${new Set(selectedRows.map((row) => row.awardee)).size} awardees in "${selectedCategory}". ${scaleModeDescription} Hover or click a community to review its funding metrics and projects here.`
-    : 'Select a category to reveal the awardees spending on it.';
+    ? `${scaleModeDescription}`
+    : 'Click on a category to reveal the awardees spending on it.';
 
   function createFontScale(values, minFont, maxFont) {
     const [minValue, maxValue] = extent(values);
@@ -161,70 +160,26 @@
       return () => (minFont + maxFont) / 2;
     }
 
-    return scaleSqrt().domain([minValue, maxValue]).range([minFont, maxFont]);
-  }
+    const baseScale = scaleSqrt().domain([minValue, maxValue]).range([minFont, maxFont]);
+    const midpoint = (minValue + maxValue) / 2;
 
-  const PER_CAPITA_COLOR_STEPS = [
-    { limit: 0.2, saturation: 0.34, lightness: 0.72 },
-    { limit: 0.4, saturation: 0.48, lightness: 0.64 },
-    { limit: 0.6, saturation: 0.62, lightness: 0.56 },
-    { limit: 0.8, saturation: 0.76, lightness: 0.48 },
-    { limit: 1, saturation: 0.9, lightness: 0.4 }
-  ];
+    return (value) => {
+      const baseSize = baseScale(value);
 
-  function getPerCapitaColorStep(value, [minFunds, maxFunds]) {
-    if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds) || minFunds === maxFunds) {
-      return PER_CAPITA_COLOR_STEPS[Math.floor(PER_CAPITA_COLOR_STEPS.length / 2)];
-    }
+      if (value === maxValue) {
+        return baseSize * 1.16;
+      }
 
-    const t = clamp((value - minFunds) / (maxFunds - minFunds), 0, 1);
+      if (value > midpoint) {
+        return baseSize * 1.04;
+      }
 
-    return PER_CAPITA_COLOR_STEPS.find((step) => t <= step.limit) ?? PER_CAPITA_COLOR_STEPS[PER_CAPITA_COLOR_STEPS.length - 1];
-  }
+      if (value === minValue) {
+        return baseSize * 0.88;
+      }
 
-  function saturateCategoryColor(category, fund, [minFunds, maxFunds]) {
-    const base = hsl(categoryColor(category) ?? '#64748b');
-    const step = getPerCapitaColorStep(fund, [minFunds, maxFunds]);
-
-    return hsl(base.h, step.saturation, step.lightness).formatHex();
-  }
-
-  function getPerCapitaStepColor(category, step) {
-    const base = hsl(categoryColor(category) ?? '#64748b');
-
-    return hsl(base.h, step.saturation, step.lightness).formatHex();
-  }
-
-  function buildDiscretePerCapitaLegendBins(category, [minFunds, maxFunds]) {
-    if (!category) {
-      return [];
-    }
-
-    if (!Number.isFinite(minFunds) || !Number.isFinite(maxFunds)) {
-      return [];
-    }
-
-    if (minFunds === maxFunds) {
-      const step = getPerCapitaColorStep(minFunds, [minFunds, maxFunds]);
-
-      return [{
-        label: fundingPerCapitaFormat.format(minFunds),
-        color: getPerCapitaStepColor(category, step)
-      }];
-    }
-
-    const range = maxFunds - minFunds;
-
-    return PER_CAPITA_COLOR_STEPS.map((step, index) => {
-      const lowerLimit = index === 0 ? 0 : PER_CAPITA_COLOR_STEPS[index - 1].limit;
-      const lowerValue = minFunds + range * lowerLimit;
-      const upperValue = minFunds + range * step.limit;
-
-      return {
-        label: `${fundingPerCapitaFormat.format(lowerValue)} - ${fundingPerCapitaFormat.format(upperValue)}`,
-        color: getPerCapitaStepColor(category, step)
-      };
-    }).reverse();
+      return baseSize * 0.96;
+    };
   }
 
   function getFundingPerCapita(funds, population) {
@@ -261,11 +216,7 @@
     }));
   }
 
-  function getAwardeeBars(
-    category,
-    awardees = getAwardeeMetrics(category),
-    fundingPerCapitaExtent = extent(awardees.map(({ fundingPerCapita }) => fundingPerCapita))
-  ) {
+  function getAwardeeBars(category, awardees = getAwardeeMetrics(category)) {
     return awardees.map(({ awardee, population, funds, fundingPerCapita }) => ({
       kind: 'awardee',
       text: awardee,
@@ -275,7 +226,7 @@
       population,
       funds,
       fundingPerCapita,
-      fill: saturateCategoryColor(category, fundingPerCapita, fundingPerCapitaExtent),
+      fill: categoryColor(category) ?? '#64748b',
       title: `${awardee}: Funding per capita ${fundingPerCapitaFormat.format(fundingPerCapita)}, Total funds ${fundsFormat.format(funds)}, Population ${numberFormat.format(population)}`
     }));
   }
@@ -383,11 +334,8 @@
     .map(({ fundingPerCapita }) => fundingPerCapita)
     .filter((value) => Number.isFinite(value));
   $: globalAwardeeFundingPerCapitaExtent = extent(globalAwardeeFundingPerCapita);
-  $: activeFundingPerCapitaExtent = scaleMode === 'global'
-    ? globalAwardeeFundingPerCapitaExtent
-    : awardeeFundingPerCapitaExtent;
   $: awardeeBars = selectedCategory
-    ? getAwardeeBars(selectedCategory, awardeeMetrics, activeFundingPerCapitaExtent)
+    ? getAwardeeBars(selectedCategory, awardeeMetrics)
     : [];
 
 
@@ -934,11 +882,6 @@ $: {
     }
 }
 
-// Legend and bars use the same funding-per-capita metric as length and color.
-$: legendBins = selectedCategory
-  ? buildDiscretePerCapitaLegendBins(selectedCategory, activeFundingPerCapitaExtent)
-  : [];
-
 $: chartTop = selectedCategory ? clamp(height * 0.18, 96, 126) : 0;
 $: chartInsetX = selectedCategory ? clamp(width * 0.035, 24, 50) : 0;
 $: chartLabelWidth = selectedCategory ? clamp(width * 0.19, 118, 220) : 0;
@@ -1001,6 +944,20 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     return 'middle';
   }
 
+  function createLegendBins(maxValue, accentColor) {
+    if (!Number.isFinite(maxValue) || maxValue <= 0) {
+      return [{ label: fundingPerCapitaFormat.format(0), color: accentColor }];
+    }
+
+    return [
+      { label: `${fundingPerCapitaFormat.format(0)} - ${fundingPerCapitaFormat.format(maxValue / 3)}`, color: '#D8E4F2' },
+      { label: `${fundingPerCapitaFormat.format(maxValue / 3)} - ${fundingPerCapitaFormat.format((maxValue * 2) / 3)}`, color: '#8EAACB' },
+      { label: `${fundingPerCapitaFormat.format((maxValue * 2) / 3)}+`, color: accentColor }
+    ];
+  }
+
+  $: legendBins = selectedCategory ? createLegendBins(maxBarValue, tooltipAccentColor) : [];
+
 </script>
 
 <svelte:window on:click={handleWindowClick} />
@@ -1051,12 +1008,20 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
         </div>
       {/if}
 
-      <div class="panel_header">
-        <h2 class="panel_title" class:panel_title--detail={selectedCategory}>
-          {panelTitle}
-        </h2>
-        <p class="panel_summary">{summaryText}</p>
-      </div>
+      {#if selectedCategory}
+        <div class="panel_header">
+          <h2 class="panel_title" class:panel_title--detail={selectedCategory}>
+            {panelTitle}
+          </h2>
+          
+            <p class="panel_summary"> {summaryText}</p>
+          </div>
+            {:else}
+            <div class="instruction">
+            <p>{summaryText}</p>
+            </div>
+          
+      {/if}
 
       {#if selectedCategory}
         <section
@@ -1101,16 +1066,14 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
             <p class="awardee-panel_placeholder">
               No project descriptions are available for this community yet.
             </p>
-          {:else}
-            <p class="awardee-panel_placeholder">
-              Hover over a community bar to preview its funding stats and project list here, or click one to keep it selected.
-            </p>
+          
+            
           {/if}
         </section>
       {/if}
     </div>
 
-    <div class="cloud-shell cloud-shell--with-legend-slot">
+    <div class="cloud-shell">
       <div class="cloud-frame" bind:this={container}>
         {#if loading}
           <div class="state-message">Loading CSV…</div>
@@ -1215,6 +1178,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
                       y={getBarCenterY(index)}
                       text-anchor="end"
                       dominant-baseline="central"
+                      style="margin-left: 2px;"
                     >
                       {fundingPerCapitaFormat.format(bar.fundingPerCapita)}
                     </text>
@@ -1271,6 +1235,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
         aria-hidden={!selectedCategory}
       >
         {#if selectedCategory}
+        <div class="instruction"><strong>Hover</strong> over a community bar to preview its funding stats and project list, or <strong>click</strong> one to keep it selected.</div>
           <p class="legend_title">Per capita funds</p>
           <p class="legend_mode">{SCALE_MODE_LABELS[scaleMode]}</p>
 
@@ -1282,6 +1247,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
               </div>
             {/each}
           </div>
+          
         {/if}
       </div>
     </div>
@@ -1308,13 +1274,14 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
   .panel {
     display: grid;
     gap: clamp(1rem, 2vw, 1.5rem);
-    width: 100%;
+    width: 70vw;
   }
 
   .panel_layout {
     display: grid;
     gap: clamp(1rem, 3vw, 2.25rem);
     align-items: start;
+    
   }
 
   .panel_meta {
@@ -1323,10 +1290,24 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     align-content: start;
     align-self: start;
     min-width: 0;
-    border: 1px solid rgba(148, 163, 184, 0.28);
+    /* border: 1px solid rgb(0, 0, 0); */
+    /* background-color: red; */
     border-radius: 8px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.82) 100%);
+    /* box-shadow: 0 0 10px #e6e600; */
+    margin-right: 20px;
+    /* background:#e1e7ef7e;  */
+    /* background: linear-gradient(180deg, rgba(235, 245, 250, 0.98) 0%, rgba(178, 207, 244, 0.949) 100%); */
     padding: 1.1rem;
+  }
+
+  .instruction {
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 8px;
+    margin-bottom: 50px;
+    box-shadow: 0 0 10px #e6e600;
+    padding: 10px;
+    text-align:center;
+    font-size: 14px;
   }
 
   .panel_header {
@@ -1364,6 +1345,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     line-height: 1.55;
     text-align: left;
     color: #475569;
+    
   }
 
   .panel_controls {
@@ -1427,12 +1409,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     align-items: start;
   }
 
-  .cloud-shell--with-legend-slot {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: clamp(0.75rem, 2vw, 1.25rem);
-    align-items: start;
-  }
-
   .cloud-frame {
     min-width: 0;
     border-radius: 8px;
@@ -1440,7 +1416,8 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07);
     overflow: hidden;
-    padding: clamp(1rem, 2vw, 1.45rem);
+    margin-left:20px;
+    /* padding: clamp(1rem, 2vw, 1.45rem); */
   }
 
   svg {
@@ -1762,87 +1739,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     font-size: 0.92em;
   }
 
-  .legend {
-    display: grid;
-    gap: 0.55rem;
-    width: 100%;
-    padding: 1rem 1rem 0.95rem;
-    border-radius: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.26);
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
-  }
-
-  .legend--side {
-    width: clamp(9rem, 14vw, 11.5rem);
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-    justify-items: end;
-    align-content: center;
-    text-align: right;
-  }
-
-  .legend--placeholder {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .legend_title {
-    margin: 0;
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: uppercase;
-    color: #475569;
-  }
-
-  .legend--side .legend_title {
-    width: 100%;
-  }
-
-  .legend_mode {
-    width: 100%;
-    margin: -0.15rem 0 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: uppercase;
-    color: #64748b;
-  }
-
-  .legend_bins {
-    display: grid;
-    gap: 0.38rem;
-    width: 100%;
-    margin-top: 0.35rem;
-  }
-
-  .legend_bin {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 1rem;
-    align-items: center;
-    gap: 0.45rem;
-  }
-
-  .legend_bin-label {
-    min-width: 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    line-height: 1.15;
-    color: #475569;
-    white-space: normal;
-  }
-
-  .legend_bin-swatch {
-    width: 1rem;
-    height: 1.25rem;
-    border-radius: 3px;
-    border: 1px solid rgba(15, 23, 42, 0.16);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
-  }
-
   @media (min-width: 900px) {
     .panel_layout {
       grid-template-columns: minmax(13.5rem, 17.5rem) minmax(0, 1fr);
@@ -1858,9 +1754,7 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
       grid-template-rows: auto auto minmax(0, 1fr);
     }
 
-    .awardee-panel {
-      margin: 0;
-    }
+    
 
     .back-button {
       justify-self: start;
@@ -1879,4 +1773,6 @@ $: barTickValues = maxBarValue > 0 ? [0, maxBarValue / 2, maxBarValue] : [0];
     }
 
   }
+
+  
 </style>
