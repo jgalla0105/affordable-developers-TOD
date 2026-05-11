@@ -31,6 +31,10 @@
           unit={tabs[activeTab].unit}
           legendBins={tabs[activeTab].legendBins}
           colorStops={tabs[activeTab].colorStops}
+          visualEncoding={tabs[activeTab].visualEncoding ?? 'color'}
+          dataUrl={tabs[activeTab].dataUrl ?? ''}
+          circleColor={tabs[activeTab].circleColor ?? tabs[activeTab].principleColor}
+          radiusStops={tabs[activeTab].radiusStops ?? []}
         />
       {/key}
     </div>
