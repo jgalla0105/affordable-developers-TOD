@@ -91,8 +91,25 @@
 
     <hr  style="margin-top:10rem">
         <p class="refs">This project was developed with guidance and feedback from the <a href=https://www.mapc.org target=blank>Metropolitan Area Planning Commission (MAPC)</a></p>
-        <p class="refs" style="font-weight:bold">DATA SOURCES</p>
-        <p class="placeholder">**insert rest of referneces here**</p>
+        
+        <div class="citations">
+            <div>
+                <p class="refTitle">DATA SOURCES</p>
+                <ul style="text-align:left;">
+                    <li>MassDot & MBTA Transit-Oriented Development (TOD) Policies and Guidelines <a class="arrow-link" href="https://mbtarealty.com/wp-content/uploads/2022/09/MassDOT-and-MBTA-TOD-Policy-20170619.pdf" target="_blank">&rarr;</a></li>
+                    <li>U.S. Census Bureau and American Community Surveys <a class="arrow-link" href="https://data.census.gov/" target="_blank">&rarr;</a></li>
+                </ul>
+            </div>
+            <div>
+                    <p class="refTitle">TEAM</p>
+                    <ul style="text-align:left;">
+                        <li>Avril Matute Cruz · Eri-ife Olayinka · Estehr Magbagbeola · Jabes Gallardo</li>
+                    </ul>
+            </div>
+                
+            
+        </div>
+        <p class="refs" style="font-weight:bold; margin-bottom:20px; margin-top:20px;">6.C35/C85 MIT Interactive Visualization & Society | Spring 2026</p>
     </div>
    
 
@@ -112,8 +129,48 @@
      font-family: 'Inter', sans-serif;
     }
     
+    .arrow-link {
+    text-decoration: none;
+    font-size: 24px;
+    color: rgb(255, 213, 0);
+    transition: 0.3s;
+  }
+  .arrow-link:hover {
+    color: rgb(139, 134, 0);
+    padding-left: 10px; /* Moves the arrow slightly when hovered */
+  }
+
+    ul {
+        list-style:none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 5px;
+    }
+
+
+    .refTitle {
+        text-align: center;
+        font-weight: bold;
+        color:rgb(0, 0, 0); 
+        font-size: 1rem;
+        text-align: left;
+        font-family: 'DotFont', sans-serif;
+    }
+    .citations {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+        max-width: 50%;
+        /* place-items: center; */
+        margin: 0 auto;
+        color:rgb(158, 158, 158); 
+        font-size: 1rem;
+        margin-top: 25px;
+    }
     hr {
-        width: 50%;
+        width: 75%;
         background-color:rgb(158, 158, 158);
         height:1px;
     }
